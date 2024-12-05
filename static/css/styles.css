@@ -1,0 +1,212 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+
+}
+
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+body, html {
+    font-family: "Roboto", "Verdana", sans-serif;
+    font-size: 16px;
+
+    height: 100vh;
+
+    /*display: flex;*/
+    /*justify-content: center;*/
+    /*align-items: center;*/
+
+    overflow-x: hidden;
+}
+
+header, footer {
+    height: 80px;
+    background-color: #ddecef;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+}
+
+.my-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.reg-card {
+    width: 30%;
+    height: 60%;
+
+    display: flex;
+    flex-direction: column; /* Выстраиваем элементы внутри вертикально */
+    justify-content: center;
+    align-items: center;
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    padding: 10px;
+
+    background-color: #f1f1f1;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(26, 1, 204, 0.5);
+    border: 1px solid #1A01CC;
+
+}
+
+@media (max-width: 768px) {
+    /* Стили для стандартных смартфонов */
+    .reg-card {
+        width: 95%;
+        height:80%;
+        overflow-y: auto;
+        font-size: 14px;
+    }
+
+    .reg-form {
+        width: 95%;
+    }
+}
+
+.mb-20 {
+    margin-bottom: 20px;
+}
+
+
+/*********************************************
+REGISTRATION FORM
+*********************************************/
+
+.reg-form {
+    width: 85%;
+    padding: 5px;
+}
+
+.reg-block-input {
+    position: relative;
+    margin-bottom: 14px;
+    padding: 0 0 0 5px;
+}
+
+.form-label {
+    padding: 0 0 2px 1px;
+}
+
+.form-control {
+    border: #cdd37b 1px solid;
+    margin: 1px 0 0 0;
+    padding: 4px 6px;
+    width: 100%;
+    height: 34px;
+    border-radius: 5px;
+    outline: none;
+    transition: 0.3s;
+}
+
+.eye{
+    position: absolute;
+    right: 2%;
+    bottom: 8%;
+    width: 25px;
+    height: 25px;
+}
+
+.eye.close{
+    background-image: url("../img/eye-close.svg");
+}
+
+.eye.open{
+    background-image: url("../img/eye-open.svg");
+}
+
+.form-control:focus{
+    border-color: #1A01CC;
+    caret-color: #1A01CC;
+    transition: 0.3s;
+}
+
+.form-control:active{
+    border-color: #1A01CC;
+}
+
+.error-message {
+    /*margin: 2px 0 0 0;*/
+    padding: 0 0 0 6px;
+    position: absolute;
+    top: 104%; /* Расположение под полем ввода */
+    left: 0;
+    height: 13px;
+    color: red;
+    font-size: 0.72rem;
+    display: flex; /* Скрыть сообщение об ошибке по умолчанию */
+}
+
+.invalid {
+    border: 1px solid red;
+    transition: 0.3s;
+}
+
+.valid {
+    border: 1px solid rgba(75, 177, 0, .85);
+    transition: 0.3s;
+}
+
+.reg-form-checkmark-field {
+    position: absolute;
+    /*margin: 3px;*/
+    left: 100%;
+    top: 65%;
+    width: 33px;
+    height: 33px;
+    display: flex;
+    transform: translateY(-50%);
+}
+
+.checkmark {
+    color: #4bb100d9;
+    opacity: 0; /* Исходная прозрачность */
+    transition: opacity 0.3s ease-in-out; /* Плавная анимация */    /*stroke: #4CAF50; !* Цвет контура *!*/
+}
+
+/* Стили для галочки */
+.checkmark.visible {
+    opacity: 1; /* Конечная прозрачность */
+}
+
+
+.profile-container {
+    margin: 0 auto;
+    width: 1000px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+
+}
+
+.profile-block-user{
+    border: 1px solid yellowgreen;
+    width: 1000px;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}

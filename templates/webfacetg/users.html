@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    <title>Регистрация пользователя</title>
+{% endblock title %}
+
+{% block css %}
+    <style>
+    @media (max-width: 576px) {
+        .table-responsive {
+            overflow-x: auto;
+        }
+    }
+    </style>
+{% endblock %}
+
+{% block content %}
+<h5 class="text-center mt-2">Список пользователей</h5>
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead class="table-secondary" style="height: 50px;">
+            <th class="text-center align-middle">Номер</th>
+            <th class="text-center align-middle">ФИО</th>
+            <th class="text-center align-middle">ФИО из ТГ</th>
+            <th class="text-center align-middle">username</th>
+        </thead>
+        <tbody>
+            {% for user in users %}
+        <tr class="text-center">
+            <td>
+                {{ forloop.counter }}
+            </td>
+            <td>
+                {{ user.full_name }}
+            </td>
+            <td>
+                {{ user.full_name_from_tg }}
+            </td>
+            <td>
+                {{ user.username }}
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+{% endblock content %}

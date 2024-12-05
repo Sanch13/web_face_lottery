@@ -3,8 +3,8 @@ from django.db import models
 
 class Lottery(models.Model):
     id = models.BigAutoField(primary_key=True)
-    name = models.CharField(unique=True, blank=True, null=True)
-    description = models.CharField(blank=True, null=True)
+    name = models.CharField(max_length=255, unique=True, blank=True, null=True)
+    description = models.CharField(max_length=500, blank=True, null=True)
     create = models.DateTimeField(blank=True, null=True)
 
     class Meta:
@@ -40,9 +40,9 @@ class Ticket(models.Model):
 class TelegramUser(models.Model):
     id = models.BigAutoField(primary_key=True)
     telegram_id = models.BigIntegerField(unique=True, blank=True, null=True)
-    full_name = models.CharField(blank=True, null=True)
-    full_name_from_tg = models.CharField(blank=True, null=True)
-    username = models.CharField(blank=True, null=True)
+    full_name = models.CharField(max_length=255, blank=True, null=True)
+    full_name_from_tg = models.CharField(max_length=255, blank=True, null=True)
+    username = models.CharField(max_length=255, blank=True, null=True)
     is_active = models.BooleanField()
 
     class Meta:

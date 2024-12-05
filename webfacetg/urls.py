@@ -1,8 +1,8 @@
-from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
+from .views import get_all_tg_users
 
-app = "webfacetg"
+app_name = "webfacetg"
 
 urlpatterns = [
-    path('', ),
+    path('users/', get_all_tg_users, name="get_all_tg_users"),
 ]
