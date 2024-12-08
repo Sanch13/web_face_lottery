@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 
 class Lottery(models.Model):
@@ -6,6 +7,12 @@ class Lottery(models.Model):
     name = models.CharField(max_length=255, unique=True, blank=True, null=True)
     description = models.CharField(max_length=500, blank=True, null=True)
     create = models.DateTimeField(blank=True, null=True)
+
+    def get_absolute_url(self):
+        return reverse("webfacetg:lottery_users", args=[self.id])
+
+    def __str__(self):
+        return self.name
 
     class Meta:
         managed = False
@@ -39,12 +46,33 @@ class Ticket(models.Model):
 
 class TelegramUser(models.Model):
     id = models.BigAutoField(primary_key=True)
-    telegram_id = models.BigIntegerField(unique=True, blank=True, null=True)
-    full_name = models.CharField(max_length=255, blank=True, null=True)
-    full_name_from_tg = models.CharField(max_length=255, blank=True, null=True)
-    username = models.CharField(max_length=255, blank=True, null=True)
+    telegram_id = models.BigIntegerField(unique=True,
+                                         blank=True,
+                                         null=True)
+    full_name = models.CharField(max_length=255,
+                                 verbose_name='ФИО',
+                                 blank=True,
+                                 null=True)
+    full_name_from_tg = models.CharField(max_length=255,
+                                         verbose_name='ФИО из Телеграма',
+                                         blank=True,
+                                         null=True)
+    username = models.CharField(max_length=255,
+                                blank=True,
+                                null=True)
     is_active = models.BooleanField()
 
     class Meta:
         managed = False
         db_table = 'users'
+
+    def __str__(self):
+        return f"{self.full_name} ID({self.id})"
+
+    def get_absolute_url(self):
+        return reverse("webfacetg:edit_users", args=[str(self.id)])
+
+    def save(self, *args, **kwargs):
+        kwargs['using'] = kwargs.get('using', 'psql')  # Указываем базу по умолчанию
+        super().save(*args, **kwargs)
+

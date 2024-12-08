@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    <title>Лотерея</title>
+{% endblock title %}
+
+{% block css %}
+    <!-- Подключаем иконки (например, FontAwesome) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+    <div class="container d-flex justify-content-center align-items-center min-vh-100">
+        <div class="w-100" style="max-width: 600px;">
+            <h4 class="text-center mt-2 mb-4">
+                Список участников лотереи 
+                <!-- Кнопка для скачивания файла -->
+                <a href="{% url 'webfacetg:download_participants_lottery' pk=lottery %}" 
+                   class="btn btn-link" title="Скачать участников">
+                    <i class="fa fa-floppy-disk fa-3x"></i>
+                </a>
+            </h4>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover text-center">
+                    <thead class="table-secondary">
+                        <tr>
+                            <th class="text-center align-middle">Номер</th>
+                            <th class="text-center align-middle">ФИО Участника</th>
+                            <th class="text-center align-middle">Билет</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ticket in tickets %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td style="text-align: start">{{ ticket.user.full_name }}</td>
+                                <td>{{ ticket.ticket_number }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -20,8 +20,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
+#  APPS
 INSTALLED_APPS += [
     'webfacetg',
+]
+
+# EXTENSIONS
+INSTALLED_APPS += [
+    'django_extensions',
 ]
 
 MIDDLEWARE = [

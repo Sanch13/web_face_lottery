@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    <title>Пользователи</title>
+{% endblock title %}
+
+{% block css %}
+    <style>
+        @media (max-width: 576px) {
+            .table-responsive {
+                overflow-x: auto;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container d-flex justify-content-center align-items-center min-vh-100">
+        <div class="w-100" style="max-width: 800px;">
+            <h4 class="text-center mt-2 mb-4">Список всех лотерей</h4>
+            {% for lottery in lotteries %}
+                Просмотр всех участников лотерии
+                <a href="{{ lottery.lottery.get_absolute_url }}">{{ lottery.display_name }}</a>
+                <br>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock content %}

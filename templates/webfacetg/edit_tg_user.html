@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    <title>Пользователь</title>
+{% endblock title %}
+
+{% block css %}
+{% endblock %}
+
+{% block content %}
+    <p class="text-center mb-4">
+        <a href="{% url 'webfacetg:get_all_tg_users' %}" class="btn btn-secondary">
+            Назад к списку пользователей
+        </a>
+    </p>
+    <div class="container d-flex justify-content-center align-items-center min-vh-100">
+    
+        <div class="card shadow p-4" style="max-width: 700px; width: 100%;">
+            <h5 class="text-center mb-4">Пользователь</h5>
+            <!-- Уведомление -->
+            {% if messages %}
+                <div id="notification-container"
+                     class="toast-container position-fixed bottom-0 end-0 p-3">
+                    {% for message in messages %}
+                        <div class="toast align-items-center text-bg-success border-0 show"
+                             role="alert" aria-live="assertive" aria-atomic="true">
+                            <div class="d-flex">
+                                <div class="toast-body">
+                                    {{ message }}
+                                </div>
+                                <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                                        data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <!-- Форма -->
+            <form method="post" class="needs-validation" novalidate>
+                {% csrf_token %}
+                {{ form.as_p }}
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Уведомление исчезает через 10 секунд
+        setTimeout(() => {
+            const notificationContainer = document.getElementById('notification-container');
+            if (notificationContainer) {
+                notificationContainer.remove();
+            }
+        }, 10000);
+    </script>
+
+{% endblock content %}

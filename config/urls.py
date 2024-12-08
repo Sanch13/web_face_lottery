@@ -3,9 +3,13 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+from webfacetg.views import home, DeactivateUserAPIView
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', home, name='home'),
     path('telegram_users/', include("webfacetg.urls", namespace="tg_users")),
+    path('api/users/<int:user_id>/deactivate/', DeactivateUserAPIView.as_view(), name='deactivate-user'),
 ]
 
 if settings.DEBUG:

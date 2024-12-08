@@ -4,13 +4,17 @@
 
 <head>
     {% block title %}
-    <title></title>
+        <title></title>
     {% endblock title %}
 
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+          rel="stylesheet">
 
+    <!-- Main CSS -->
     <link href="{% static 'css/styles.css' %}" rel="stylesheet"/>
 
     {% block css %}
@@ -19,7 +23,13 @@
 <body>
 
 <header>
-    <div>header</div>
+    <nav class="header-nav">
+        <ul class="menu">
+            <li><a href="{% url 'home' %}">Главная</a></li>
+            <li><a href="{% url 'webfacetg:get_all_tg_users' %}">Список пользователей</a></li>
+            <li ><a href="{% url 'webfacetg:all_lotteries' %}">Список лотерей</a></li>
+        </ul>
+    </nav>
 </header>
 
 <main>
@@ -27,9 +37,12 @@
     {% endblock %}
 </main>
 
-<footer>
-    <div>footer</div>
-</footer>
+{#<footer>#}
+{#    <div>footer</div>#}
+{#</footer>#}
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

@@ -2,49 +2,139 @@
 {% load static %}
 
 {% block title %}
-    <title>Регистрация пользователя</title>
+    <title>Пользователи</title>
 {% endblock title %}
 
 {% block css %}
     <style>
-    @media (max-width: 576px) {
-        .table-responsive {
-            overflow-x: auto;
+        @media (max-width: 576px) {
+            .table-responsive {
+                overflow-x: auto;
+            }
         }
-    }
     </style>
 {% endblock %}
 
 {% block content %}
-<h5 class="text-center mt-2">Список пользователей</h5>
-<div class="table-responsive">
-    <table class="table table-bordered">
-        <thead class="table-secondary" style="height: 50px;">
-            <th class="text-center align-middle">Номер</th>
-            <th class="text-center align-middle">ФИО</th>
-            <th class="text-center align-middle">ФИО из ТГ</th>
-            <th class="text-center align-middle">username</th>
-        </thead>
-        <tbody>
-            {% for user in users %}
-        <tr class="text-center">
-            <td>
-                {{ forloop.counter }}
-            </td>
-            <td>
-                {{ user.full_name }}
-            </td>
-            <td>
-                {{ user.full_name_from_tg }}
-            </td>
-            <td>
-                {{ user.username }}
-            </td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-</div>
+    <div class="container d-flex justify-content-center align-items-center min-vh-100">
+        <div class="w-100" style="max-width: 800px;">
+            <h4 class="text-center mt-2 mb-4">Список пользователей Telegram-МИРАН</h4>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover text-center">
+                    <thead class="table-secondary">
+                    <tr>
+                        <th class="text-center align-middle">Номер</th>
+                        <th class="align-middle">ФИО</th>
+                        <th class="text-center align-middle">ФИО из ТГ</th>
+                        <th class="text-center align-middle">Username</th>
+                        <th class="text-center align-middle">Действия</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for user in users %}
+                        <tr id="user-row-{{ user.id }}">
+                            <td>{{ forloop.counter }}</td>
+                            <td style="text-align: start">{{ user.full_name }}</td>
+                            <td>{{ user.full_name_from_tg }}</td>
+                            <td>{{ user.username }}</td>
+                            <td>
+                                <a href="{{ user.get_absolute_url }}"
+                                   class="btn btn-sm btn-primary">Редактировать</a>
+                                <button class="btn btn-sm btn-danger"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#deleteModal"
+                                        data-user-id="{{ user.id }}"
+                                        data-user-name="{{ user.full_name }}">
+                                    Удалить
+                                </button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно подтверждения -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Подтверждение удаления</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Вы уверены, что хотите удалить пользователя <strong
+                        id="modal-user-name"></strong>?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена
+                    </button>
+                    <button id="confirmDeleteBtn" type="button" class="btn btn-danger">Удалить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Уведомление об успешном удалении -->
+    <div id="successAlert" class="alert alert-success position-fixed bottom-0 end-0 m-3 d-none"
+         role="alert"></div>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const deleteModal = document.getElementById("deleteModal");
+            const modalUserName = document.getElementById("modal-user-name");
+            const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+            const successAlert = document.getElementById("successAlert");
+
+            let userIdToDelete = null;
+
+            // Открытие модального окна
+            deleteModal.addEventListener("show.bs.modal", function (event) {
+                const button = event.relatedTarget;
+                userIdToDelete = button.getAttribute("data-user-id");
+                const userName = button.getAttribute("data-user-name");
+                modalUserName.textContent = userName;
+            });
+
+            // Обработчик кнопки удаления
+            confirmDeleteBtn.addEventListener("click", function () {
+                if (userIdToDelete) {
+                    fetch(`/api/users/${userIdToDelete}/deactivate/`, {
+                        method: "PATCH",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                // Успешное удаление
+                                document.getElementById(`user-row-${userIdToDelete}`).remove();
+                                showSuccessAlert("Пользователь успешно деактивирован.");
+                                const bootstrapModal = bootstrap.Modal.getInstance(deleteModal);
+                                bootstrapModal.hide();
+                            } else {
+                                console.error("Ошибка деактивации пользователя");
+                            }
+                        });
+                }
+            });
+
+            // Функция для отображения уведомления
+            function showSuccessAlert(message) {
+                successAlert.textContent = message;
+                successAlert.classList.remove("d-none");
+                setTimeout(() => {
+                    successAlert.classList.add("d-none");
+                }, 10000); // Уведомление исчезнет через 10 секунд
+            }
+        });
+    </script>
 
 
 {% endblock content %}
