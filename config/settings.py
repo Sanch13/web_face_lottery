@@ -23,6 +23,7 @@ INSTALLED_APPS = [
 #  APPS
 INSTALLED_APPS += [
     'webfacetg',
+    'accounts',
 ]
 
 # EXTENSIONS
