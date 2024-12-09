@@ -23,6 +23,7 @@ INSTALLED_APPS = [
 #  APPS
 INSTALLED_APPS += [
     'webfacetg',
+    'accounts',
 ]
 
 # EXTENSIONS
@@ -40,6 +41,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+AUTH_USER_MODEL = 'accounts.User'
+LOGIN_URL = 'accounts:login'
 ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [

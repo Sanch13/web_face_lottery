@@ -17,7 +17,7 @@
 
 {% block content %}
     <div class="container d-flex justify-content-center align-items-center min-vh-100">
-        <div class="w-100" style="max-width: 800px;">
+        <div class="w-100" style="max-width: 1000px;">
             <h4 class="text-center mt-2 mb-4">Список пользователей Telegram-МИРАН</h4>
             <div class="table-responsive">
                 <table class="table table-bordered table-hover text-center">
@@ -27,7 +27,9 @@
                         <th class="align-middle">ФИО</th>
                         <th class="text-center align-middle">ФИО из ТГ</th>
                         <th class="text-center align-middle">Username</th>
+                        {% if request.user.is_authenticated and request.user.is_admin %}
                         <th class="text-center align-middle">Действия</th>
+                        {% endif %}
                     </tr>
                     </thead>
                     <tbody>
@@ -37,17 +39,20 @@
                             <td style="text-align: start">{{ user.full_name }}</td>
                             <td>{{ user.full_name_from_tg }}</td>
                             <td>{{ user.username }}</td>
-                            <td>
-                                <a href="{{ user.get_absolute_url }}"
-                                   class="btn btn-sm btn-primary">Редактировать</a>
-                                <button class="btn btn-sm btn-danger"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#deleteModal"
-                                        data-user-id="{{ user.id }}"
-                                        data-user-name="{{ user.full_name }}">
-                                    Удалить
-                                </button>
-                            </td>
+                        
+                            {% if request.user.is_authenticated and request.user.is_admin %}
+                                <td>
+                                    <a href="{{ user.get_absolute_url }}"
+                                       class="btn btn-sm btn-primary">Редактировать</a>
+                                    <button class="btn btn-sm btn-danger"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#deleteModal"
+                                            data-user-id="{{ user.id }}"
+                                            data-user-name="{{ user.full_name }}">
+                                        Удалить
+                                    </button>
+                                </td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                     </tbody>

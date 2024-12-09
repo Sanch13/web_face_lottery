@@ -73,3 +73,14 @@ header {
 /*    background-color: #151617; !* Цвет ссылки при наведении *!*/
 /*    color: gold;*/
 /*}*/
+
+
+/* Плавное исчезновение toast-сообщений через 7 секунд */
+.toast {
+    opacity: 1;
+    transition: opacity 1s ease-out;
+}
+
+.toast.hide {
+    opacity: 0;
+}

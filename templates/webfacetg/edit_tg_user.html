@@ -15,16 +15,18 @@
         </a>
     </p>
     <div class="container d-flex justify-content-center align-items-center min-vh-100">
-    
+
         <div class="card shadow p-4" style="max-width: 700px; width: 100%;">
             <h5 class="text-center mb-4">Пользователь</h5>
+
             <!-- Уведомление -->
             {% if messages %}
                 <div id="notification-container"
                      class="toast-container position-fixed bottom-0 end-0 p-3">
                     {% for message in messages %}
                         <div class="toast align-items-center text-bg-success border-0 show"
-                             role="alert" aria-live="assertive" aria-atomic="true">
+                             role="alert" aria-live="assertive" aria-atomic="true"
+                             data-bs-autohide="true" data-bs-delay="7000">
                             <div class="d-flex">
                                 <div class="toast-body">
                                     {{ message }}
@@ -36,6 +38,8 @@
                     {% endfor %}
                 </div>
             {% endif %}
+
+
             <!-- Форма -->
             <form method="post" class="needs-validation" novalidate>
                 {% csrf_token %}

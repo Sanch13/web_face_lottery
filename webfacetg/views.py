@@ -1,5 +1,7 @@
-from django.shortcuts import render
+from django.contrib.auth import logout
+from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -11,8 +13,9 @@ from .utils import create_list_of_participants_lottery
 
 
 def home(request):
-    return render(request=request,
-                  template_name='webfacetg/home.html')
+    return redirect(to="accounts:login")
+    # return render(request=request,
+    #               template_name='webfacetg/home.html')
 
 
 def get_list_lotteries(request):
@@ -49,6 +52,7 @@ def get_all_tg_users(request):
                   context=context)
 
 
+@login_required
 def edit_tg_user(request, pk):
     user = TelegramUser.objects.using('psql').get(pk=pk)
 

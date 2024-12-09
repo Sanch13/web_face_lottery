@@ -15,5 +15,4 @@ class EditTelegramUserForm(forms.ModelForm):
 
     class Meta:
         model = TelegramUser
-        fields = ('full_name', 'full_name_from_tg')
-
+        fields = ('full_name', )
