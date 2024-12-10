@@ -9,7 +9,7 @@ from rest_framework import status
 
 from .forms import EditTelegramUserForm
 from .models import TelegramUser, Lottery, Ticket
-from .utils import create_list_of_participants_lottery
+from .utils import create_list_of_participants_lottery, create_list_all_users
 
 
 def home(request):
@@ -112,3 +112,17 @@ def download_participants_lottery(request, pk):
         })
 
     return create_list_of_participants_lottery(data)
+
+
+def download_all_tg_users(request):
+    users = TelegramUser.objects.using("psql").filter(is_active=True)
+
+    # Подготавливаем данные для DataFrame
+    data = []
+    for idx, user in enumerate(users, start=1):
+        data.append({
+            'Номер': idx,
+            'ФИО': user.full_name,
+        })
+
+    return create_list_all_users(data)

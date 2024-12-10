@@ -13,12 +13,21 @@
             }
         }
     </style>
+    <!-- Подключаем иконки (например, FontAwesome) -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 {% endblock %}
 
 {% block content %}
     <div class="container d-flex justify-content-center align-items-center min-vh-100">
         <div class="w-100" style="max-width: 1000px;">
-            <h4 class="text-center mt-2 mb-4">Список пользователей Telegram-МИРАН</h4>
+            <h4 class="text-center mt-2 mb-4">Список пользователей Telegram-МИРАН
+                <!-- Кнопка для скачивания файла -->
+                <a href="{% url 'webfacetg:download_all_tg_users' %}"
+                   class="btn btn-link" title="Скачать текущих пользователей">
+                    <i class="fa fa-floppy-disk fa-3x"></i>
+                </a>
+            </h4>
             <div class="table-responsive">
                 <table class="table table-bordered table-hover text-center">
                     <thead class="table-secondary">
@@ -28,7 +37,7 @@
                         <th class="text-center align-middle">ФИО из ТГ</th>
                         <th class="text-center align-middle">Username</th>
                         {% if request.user.is_authenticated and request.user.is_admin %}
-                        <th class="text-center align-middle">Действия</th>
+                            <th class="text-center align-middle">Действия</th>
                         {% endif %}
                     </tr>
                     </thead>
@@ -39,7 +48,7 @@
                             <td style="text-align: start">{{ user.full_name }}</td>
                             <td>{{ user.full_name_from_tg }}</td>
                             <td>{{ user.username }}</td>
-                        
+
                             {% if request.user.is_authenticated and request.user.is_admin %}
                                 <td>
                                     <a href="{{ user.get_absolute_url }}"

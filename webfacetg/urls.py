@@ -13,4 +13,7 @@ urlpatterns = [
     path('users/lottery/<int:pk>/participants/download/',
          views.download_participants_lottery,
          name='download_participants_lottery'),
+    path('users/lottery/all_users/download/',
+         views.download_all_tg_users,
+         name='download_all_tg_users'),
 ]

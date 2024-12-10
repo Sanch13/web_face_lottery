@@ -9,13 +9,14 @@
 {% endblock %}
 
 {% block content %}
-    <p class="text-center mb-4">
-        <a href="{% url 'webfacetg:get_all_tg_users' %}" class="btn btn-secondary">
+    <!-- Кнопка расположена по центру -->
+    <p class="text-center mb-4" style="margin-bottom: 50px;">
+        <a href="{% url 'webfacetg:get_all_tg_users' %}" class="btn btn-info">
             Назад к списку пользователей
         </a>
     </p>
-    <div class="container d-flex justify-content-center align-items-center min-vh-100">
-
+    <div class="container d-flex justify-content-center align-items-center">
+        <!-- Карточка, которая теперь расположена ниже кнопки -->
         <div class="card shadow p-4" style="max-width: 700px; width: 100%;">
             <h5 class="text-center mb-4">Пользователь</h5>
 
@@ -39,7 +40,6 @@
                 </div>
             {% endif %}
 
-
             <!-- Форма -->
             <form method="post" class="needs-validation" novalidate>
                 {% csrf_token %}
@@ -50,6 +50,11 @@
             </form>
         </div>
     </div>
+
+
+
+
+
 
     <script>
         // Уведомление исчезает через 10 секунд

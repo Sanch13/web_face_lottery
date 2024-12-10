@@ -14,6 +14,10 @@ body, html {
     font-size: 16px;
 }
 
+main {
+    padding-top: 100px;
+}
+
 header {
     height: 80px;
     background-color: #ddecef;
