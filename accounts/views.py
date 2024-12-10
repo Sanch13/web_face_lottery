@@ -14,12 +14,18 @@ def user_login(request):
             # Аутентификация по email и паролю
             user = authenticate(request, email=email, password=password)
 
-            if user is not None and user.is_active and user.is_admin:
-                login(request, user)
-                messages.success(request, "Вы успешно вошли в систему.")
-                return redirect('home')  # Замените 'home' на ваш URL
+            if user is not None:
+                if not user.is_admin:  # Проверка, что пользователь не администратор
+                    messages.error(request, "Вы не являетесь администратором")
+                    return redirect('home')  # Замените 'home' на нужный URL
+
+                if user.is_active and user.is_admin:  # Проверка на активность и админ-статус
+                    login(request, user)
+                    messages.success(request, "Вы успешно вошли в систему.")
+                    return redirect('home')  # Замените 'home' на нужный URL
             else:
                 messages.error(request, "Неправильный email или пароль.")
+                return redirect('home')  # Редирект для некорректного пользователя
     else:
         user_login_form = UserLoginForm()
 
