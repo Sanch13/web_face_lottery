@@ -43,9 +43,18 @@ def get_list_lotteries(request):
 
 
 def get_all_tg_users(request):
-    users = TelegramUser.objects.using('psql').filter(is_active=True)
+    users = TelegramUser.objects.using('psql').filter(is_active=True).order_by("full_name")
+    list_edit_users = []
+    for user in users:
+        if len(user.full_name.split()) != 3:
+            list_edit_users.append(user)
+            continue
+        if not user.full_name.istitle():
+            list_edit_users.append(user)
+
     context = {
-        "users": users
+        "users": users,
+        "edit_full_name": list_edit_users if list_edit_users else ''
     }
     return render(request=request,
                   template_name="webfacetg/users.html",
@@ -73,7 +82,8 @@ def edit_tg_user(request, pk):
 
 
 def get_list_participants_lottery(request, pk):
-    tickets = Ticket.objects.using("psql").filter(lottery=pk).select_related('user').order_by('ticket_number')
+    tickets = Ticket.objects.using("psql").filter(lottery=pk).select_related('user').order_by(
+        'user__full_name')
     # tickets = Ticket.objects.using("psql").prefetch_related('user').order_by('ticket_number')
 
     context = {
@@ -100,7 +110,8 @@ class DeactivateUserAPIView(APIView):
 
 
 def download_participants_lottery(request, pk):
-    tickets = Ticket.objects.using("psql").filter(lottery=pk).select_related('user').order_by('ticket_number')
+    tickets = Ticket.objects.using("psql").filter(lottery=pk).select_related('user').order_by(
+        'ticket_number')
 
     # Подготавливаем данные для DataFrame
     data = []

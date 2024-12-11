@@ -13,7 +13,7 @@
 {% block content %}
     <div class="container d-flex justify-content-center align-items-center min-vh-100">
         <div class="w-100" style="max-width: 600px;">
-            <h4 class="text-center mt-2 mb-4">
+            <h4 class="text-center mt-2">
                 Список участников лотереи 
                 <!-- Кнопка для скачивания файла -->
                 <a href="{% url 'webfacetg:download_participants_lottery' pk=lottery %}" 
@@ -21,6 +21,7 @@
                     <i class="fa fa-floppy-disk fa-3x"></i>
                 </a>
             </h4>
+            <h5>Количество участников лотереи: <b class="count-users">{{ tickets.count }}</b></h5>
             <div class="table-responsive">
                 <table class="table table-bordered table-hover text-center">
                     <thead class="table-secondary">

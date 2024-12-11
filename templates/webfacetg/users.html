@@ -21,13 +21,28 @@
 {% block content %}
     <div class="container d-flex justify-content-center align-items-center min-vh-100">
         <div class="w-100" style="max-width: 1000px;">
-            <h4 class="text-center mt-2 mb-4">Список пользователей Telegram-МИРАН
+            <h4 class="text-center mt-2">Список пользователей Telegram-МИРАН
                 <!-- Кнопка для скачивания файла -->
                 <a href="{% url 'webfacetg:download_all_tg_users' %}"
                    class="btn btn-link" title="Скачать текущих пользователей">
                     <i class="fa fa-floppy-disk fa-3x"></i>
                 </a>
             </h4>
+            <div>
+                <h5>Количество пользователей: <b class="count-users">{{ users.count }}</b></h5>
+                {% if request.user.is_authenticated %}
+                    <h5>
+                        {% if edit_full_name %}
+                            Список ФИО для редактирования:
+                            {% for user in edit_full_name %}
+                                <a href="{{ user.get_absolute_url }}">{{ user.full_name }}</a>,
+                            {% endfor %}
+                        {% endif %}
+                    </h5>
+                {% endif %}
+
+            </div>
+
             <div class="table-responsive">
                 <table class="table table-bordered table-hover text-center">
                     <thead class="table-secondary">

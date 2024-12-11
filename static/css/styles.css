@@ -88,3 +88,34 @@ header {
 .toast.hide {
     opacity: 0;
 }
+
+
+.count-users {
+    color: #710bd7;
+    font-size: 25px;
+    font-weight: bold;
+}
+
+
+/* Стили для кнопки вверх */
+#scrollToTopBtn {
+    position: fixed; /* Фиксированное положение */
+    bottom: 20px;    /* Отступ снизу */
+    left: 20px;      /* Отступ слева */
+    z-index: 1000;   /* Убедитесь, что кнопка над другими элементами */
+    width: 75px;     /* Ширина кнопки */
+    height: 75px;    /* Высота кнопки */
+    border-radius: 50%; /* Круглая форма */
+    background-color: #710bd7; /* Цвет фона (серый Bootstrap) */
+    color: white;    /* Цвет текста */
+    border: none;    /* Убираем границу */
+    font-size: 50px; /* Размер стрелки */
+    cursor: pointer; /* Курсор в виде указателя */
+    display: none;   /* Изначально скрываем кнопку */
+    justify-content: center;
+    align-items: center;
+}
+
+#scrollToTopBtn:hover {
+    background-color: #5a6268; /* Темнее при наведении */
+}
