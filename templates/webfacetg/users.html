@@ -21,13 +21,19 @@
 {% block content %}
     <div class="container d-flex justify-content-center align-items-center min-vh-100">
         <div class="w-100" style="max-width: 1000px;">
-            <h4 class="text-center mt-2">Список пользователей Telegram-МИРАН
+            <h4 class="text-center mt-2 d-flex justify-content-between align-items-center">
+                <span class="flex-grow-1">Список пользователей Telegram-МИРАН</span>
                 <!-- Кнопка для скачивания файла -->
-                <a href="{% url 'webfacetg:download_all_tg_users' %}"
-                   class="btn btn-link" title="Скачать текущих пользователей">
-                    <i class="fa fa-floppy-disk fa-3x"></i>
-                </a>
+                <span>
+                    <a href="{% url 'webfacetg:download_all_tg_users' %}"
+                       class="btn btn-link d-flex flex-column align-items-center"
+                       title="Скачать текущих пользователей">
+                        <img src="{% static 'img/excel.svg' %}" alt="Скачать пользователей" class="mb-1">
+                        <span>Скачать</span>
+                    </a>
+                </span>
             </h4>
+
             <div>
                 <h5>Количество пользователей: <b class="count-users">{{ users.count }}</b></h5>
                 {% if request.user.is_authenticated %}

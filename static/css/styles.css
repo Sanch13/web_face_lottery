@@ -91,7 +91,7 @@ header {
 
 
 .count-users {
-    color: #710bd7;
+    color: #0d6efd;
     font-size: 25px;
     font-weight: bold;
 }
@@ -106,7 +106,7 @@ header {
     width: 75px;     /* Ширина кнопки */
     height: 75px;    /* Высота кнопки */
     border-radius: 50%; /* Круглая форма */
-    background-color: #710bd7; /* Цвет фона (серый Bootstrap) */
+    background-color:  #0d6efd; /* Цвет фона (серый Bootstrap) */
     color: white;    /* Цвет текста */
     border: none;    /* Убираем границу */
     font-size: 50px; /* Размер стрелки */
