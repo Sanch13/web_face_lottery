@@ -28,6 +28,15 @@
                 </span>
             </h4>
             <h5>Количество участников лотереи: <b class="count-users">{{ tickets.count }}</b></h5>
+            {% if request.user.is_authenticated %}
+                {% if users_doesnt_tickets %}
+                    <h5>Список людей которые не потянули билет для участия:<br>
+                        {% for user in users_doesnt_tickets %}
+                            <span style="color: #0d6efd">{{ user.full_name }}<br></span>
+                        {% endfor %}
+                    </h5>
+                {% endif %}
+            {% endif %}
             <div class="table-responsive">
                 <table class="table table-bordered table-hover text-center">
                     <thead class="table-secondary">

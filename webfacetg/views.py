@@ -85,10 +85,17 @@ def get_list_participants_lottery(request, pk):
     tickets = Ticket.objects.using("psql").filter(lottery=pk).select_related('user').order_by(
         'user__full_name')
     # tickets = Ticket.objects.using("psql").prefetch_related('user').order_by('ticket_number')
+    all_users = TelegramUser.objects.using("psql").all()
+
+    all_users_ids = [user.id for user in all_users]
+    ticket_users = [ticket.user.id for ticket in tickets]
+    diff_users = list(set(all_users_ids) - set(ticket_users))
+    users_doesnt_tickets = all_users.filter(id__in=diff_users)
 
     context = {
         "tickets": tickets,
-        "lottery": pk
+        "lottery": pk,
+        "users_doesnt_tickets": users_doesnt_tickets
     }
     return render(request=request,
                   template_name="webfacetg/lottery_detail.html",
