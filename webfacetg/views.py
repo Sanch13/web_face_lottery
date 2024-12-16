@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 
 from .forms import EditTelegramUserForm
 from .models import TelegramUser, Lottery, Ticket
@@ -82,10 +83,9 @@ def edit_tg_user(request, pk):
 
 
 def get_list_participants_lottery(request, pk):
-    tickets = Ticket.objects.using("psql").filter(lottery=pk).select_related('user').order_by(
-        'user__full_name')
-    # tickets = Ticket.objects.using("psql").prefetch_related('user').order_by('ticket_number')
-    all_users = TelegramUser.objects.using("psql").all()
+    tickets = Ticket.objects.using("psql").filter(lottery=pk).select_related('user').filter(
+        user__is_active=True).order_by('user__full_name')
+    all_users = TelegramUser.objects.using("psql").filter(is_active=True)
 
     all_users_ids = [user.id for user in all_users]
     ticket_users = [ticket.user.id for ticket in tickets]
@@ -103,6 +103,8 @@ def get_list_participants_lottery(request, pk):
 
 
 class DeactivateUserAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def patch(self, request, user_id):
         try:
             user = TelegramUser.objects.using('psql').get(pk=user_id)
