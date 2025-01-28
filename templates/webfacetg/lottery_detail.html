@@ -16,6 +16,8 @@
         <div class="w-100" style="max-width: 600px;">
             <h4 class="text-center mt-2 d-flex justify-content-between align-items-center">
                 <span class="flex-grow-1">Список участников лотереи</span>
+
+                {% if request.user.is_authenticated %}
                 <!-- Кнопка для скачивания файла -->
                 <span>
                     <a href="{% url 'webfacetg:download_participants_lottery' pk=lottery %}"
@@ -26,6 +28,8 @@
                         <span>Скачать</span>
                     </a>
                 </span>
+                {% endif %}
+
             </h4>
             <h5>Количество участников лотереи: <b class="count-users">{{ tickets.count }}</b></h5>
             {% if request.user.is_authenticated %}

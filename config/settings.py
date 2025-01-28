@@ -116,3 +116,8 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ],
 }
+
+# Получение параметров подключения к Redis из переменных окружения
+REDIS_HOST = settings.REDIS_HOST or "localhost"
+REDIS_PORT = settings.REDIS_PORT or 6379
+REDIS_DB = settings.REDIS_DB or 0

@@ -11,6 +11,10 @@ class Settings(BaseSettings):
     DB_PORT_PSQL: int
     DB_DATABASE_PSQL: str
 
+    REDIS_HOST: str
+    REDIS_PORT: int
+    REDIS_DB: int
+
     SMTP_SERVER: str
     PORT: int
     SENDER_EMAIL: str

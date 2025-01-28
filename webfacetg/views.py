@@ -1,7 +1,10 @@
 from django.contrib.auth import logout
+import redis
+
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -11,6 +14,13 @@ from rest_framework.permissions import IsAuthenticated
 from .forms import EditTelegramUserForm
 from .models import TelegramUser, Lottery, Ticket
 from .utils import create_list_of_participants_lottery, create_list_all_users
+
+
+redis_client = redis.StrictRedis(
+    host=settings.REDIS_HOST,
+    port=settings.REDIS_PORT,
+    db=settings.REDIS_DB
+)
 
 
 def home(request):
@@ -110,6 +120,9 @@ class DeactivateUserAPIView(APIView):
             user = TelegramUser.objects.using('psql').get(pk=user_id)
             user.is_active = False
             user.save()
+
+            redis_client.rpush('telegram_deactivate_user_queue', user.telegram_id)
+
             return Response({"message": "Пользователь деактивирован."}, status=status.HTTP_200_OK)
         except TelegramUser.DoesNotExist:
             return Response({"error": "Пользователь не найден."}, status=status.HTTP_404_NOT_FOUND)
