@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.auth import logout
 import redis
 
@@ -120,8 +122,12 @@ class DeactivateUserAPIView(APIView):
             user = TelegramUser.objects.using('psql').get(pk=user_id)
             user.is_active = False
             user.save()
-
-            redis_client.rpush('telegram_deactivate_user_queue', user.telegram_id)
+            data = {
+                "full_name": user.full_name,
+                "telegram_id": user.telegram_id,
+            }
+            redis_client.rpush('telegram_deactivate_user_queue', json.dumps(data))
+            # redis_client.rpush('telegram_deactivate_user_queue', user.telegram_id)
 
             return Response({"message": "Пользователь деактивирован."}, status=status.HTTP_200_OK)
         except TelegramUser.DoesNotExist:
