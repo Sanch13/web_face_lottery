@@ -28,6 +28,9 @@
             <li><a href="{% url 'home' %}">Главная</a></li>
             <li><a href="{% url 'webfacetg:get_all_tg_users' %}">Список пользователей</a></li>
             <li ><a href="{% url 'webfacetg:all_lotteries' %}">Список лотерей</a></li>
+            {% if request.user.is_authenticated %}
+            <li ><a href="{% url 'webfacetg:create_lottery' %}">Создать лотерею</a></li>
+            {% endif %}
         </ul>
     </nav>
 </header>

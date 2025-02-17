@@ -13,10 +13,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 
-from .forms import EditTelegramUserForm
+from .forms import EditTelegramUserForm, CreateLotteryForm
 from .models import TelegramUser, Lottery, Ticket
 from .utils import create_list_of_participants_lottery, create_list_all_users
-
+from .services import add_lottery
 
 redis_client = redis.StrictRedis(
     host=settings.REDIS_HOST,
@@ -32,23 +32,9 @@ def home(request):
 
 
 def get_list_lotteries(request):
-    name_lotteries = {
-        "lantern": "Розыгрыш умного проектора"
-    }
-
     lotteries = Lottery.objects.using("psql").all()
-
-    # Добавляем описания лотерей в список
-    lotteries_with_names = [
-        {
-            'lottery': lottery,
-            'display_name': name_lotteries.get(lottery.name, lottery.name)
-        }
-        for lottery in lotteries
-    ]
-
     context = {
-        'lotteries': lotteries_with_names
+        'lotteries': lotteries
     }
     return render(request=request,
                   template_name="webfacetg/list_lotteries.html",
@@ -104,9 +90,12 @@ def get_list_participants_lottery(request, pk):
     diff_users = list(set(all_users_ids) - set(ticket_users))
     users_doesnt_tickets = all_users.filter(id__in=diff_users)
 
+    is_active_lottery = Lottery.objects.using("psql").filter(pk=pk).values_list('is_active',
+                                                                                flat=True).first()
     context = {
         "tickets": tickets,
         "lottery": pk,
+        "is_active_lottery": is_active_lottery,
         "users_doesnt_tickets": users_doesnt_tickets
     }
     return render(request=request,
@@ -165,3 +154,29 @@ def download_all_tg_users(request):
         })
 
     return create_list_all_users(data)
+
+
+@login_required
+def create_lottery(request):
+    if request.method == 'POST':
+        form = CreateLotteryForm(data=request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            name = cd["name"]
+            description = cd["description"]
+            is_active = cd["is_active"]
+            add_lottery(name, description, is_active)
+            return redirect('webfacetg:create_lottery')
+    else:
+        form = CreateLotteryForm()
+
+    lotteries = Lottery.objects.using("psql").all().order_by("-is_active", "-create")
+    context = {
+        "form": form,
+        "lotteries": lotteries if lotteries else "",
+    }
+    return render(
+        request=request,
+        template_name="webfacetg/create_lottery.html",
+        context=context
+    )

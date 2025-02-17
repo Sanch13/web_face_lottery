@@ -21,7 +21,7 @@
             <h4 class="text-center mt-2 mb-4">Список всех лотерей</h4>
             {% for lottery in lotteries %}
                 Просмотр всех участников лотерии
-                <a href="{{ lottery.lottery.get_absolute_url }}">{{ lottery.display_name }}</a>
+                <a href="{{ lottery.get_absolute_url }}">{{ lottery.description }}</a>
                 <br>
             {% endfor %}
         </div>

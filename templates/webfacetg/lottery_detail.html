@@ -32,15 +32,30 @@
 
             </h4>
             <h5>Количество участников лотереи: <b class="count-users">{{ tickets.count }}</b></h5>
+
             {% if request.user.is_authenticated %}
-                {% if users_doesnt_tickets %}
-                    <h5>Список людей которые не потянули билет для участия:<br>
-                        {% for user in users_doesnt_tickets %}
-                            <span style="color: #0d6efd">{{ user.full_name }}<br></span>
-                        {% endfor %}
-                    </h5>
+                {% if is_active_lottery %}
+                    {% if users_doesnt_tickets %}
+                        <div class="accordion" id="usersAccordion">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingOne">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                        <b>Список людей, которые не потянули билет для участия</b>
+                                    </button>
+                                </h2>
+                                <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#usersAccordion">
+                                    <div class="accordion-body">
+                                        {% for user in users_doesnt_tickets %}
+                                            <span style="color: #0d6efd">{{ user.full_name }}<br></span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
                 {% endif %}
             {% endif %}
+
             <div class="table-responsive">
                 <table class="table table-bordered table-hover text-center">
                     <thead class="table-secondary">

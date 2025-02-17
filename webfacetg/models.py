@@ -6,7 +6,8 @@ class Lottery(models.Model):
     id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=255, unique=True, blank=True, null=True)
     description = models.CharField(max_length=500, blank=True, null=True)
-    create = models.DateTimeField(blank=True, null=True)
+    create = models.DateTimeField(blank=True, null=True, auto_now_add=True)
+    is_active = models.BooleanField(default=False)
 
     def get_absolute_url(self):
         return reverse("webfacetg:lottery_users", args=[self.id])

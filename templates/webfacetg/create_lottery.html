@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    <title>Создать лотерею</title>
+{% endblock title %}
+
+{% block css %}
+    <style>
+    /* Основний контейнер для списку лотерей */
+    .lottery-list {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    /* Стилі для кожного елементу лотереї */
+    .lottery-item {
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Стилі для назви лотереї */
+    .lottery-name {
+        margin: 0 0 10px 0;
+        font-size: 24px;
+        color: #333;
+    }
+
+    /* Стилі для опису лотереї */
+    .lottery-description {
+        margin: 0 0 15px 0;
+        font-size: 16px;
+        color: #666;
+    }
+
+    /* Стилі для статусу лотереї */
+    .lottery-status {
+        margin: 0;
+        font-size: 14px;
+        color: #444;
+    }
+
+    /* Стилі для активного статусу */
+    .status-active {
+        color: green;
+        font-weight: bold;
+    }
+
+    /* Стилі для неактивного статусу */
+    .status-inactive {
+        color: red;
+        font-weight: bold;
+    }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    <div class="container d-flex justify-content-center align-items-center">
+        <div style="width: 30%">
+            {% if form.errors %}
+                <div class="alert alert-danger">
+                    <strong>Ошибка!</strong> Пожалуйста, исправте ошибки:
+                    <ul>
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <li>{{ field|title }}: {{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            {% if request.user.is_authenticated %}
+            <!-- Форма -->
+            <h5 class="text-center mb-4">Создать лотерею</h5>
+            <form method="post" class="needs-validation" novalidate>
+                {% csrf_token %}
+                {{ form.as_p }}
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </div>
+            </form>
+            {% endif %}
+
+        </div>
+
+        <div>
+            <!-- Список лотерей -->
+            {% if lotteries %}
+                <div class="lottery-list">
+                    {% for lottery in lotteries %}
+                        <div class="lottery-item">
+                            <h2 class="lottery-name">{{ lottery.name }}</h2>
+                            <p class="lottery-description">{{ lottery.description }}</p>
+                            <p class="lottery-status">
+                                Статус:
+                                <span class="status-{% if lottery.is_active %}active{% else %}inactive{% endif %}">
+                                    {% if lottery.is_active %}Активна{% else %}Неактивна{% endif %}
+                                </span>
+                            </p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>Лотереи отсутствуют</p>
+            {% endif %}
+        </div>
+
+        <!-- Уведомление -->
+        {% if messages %}
+            <div id="notification-container"
+                 class="toast-container position-fixed bottom-0 end-0 p-3">
+                {% for message in messages %}
+                    <div class="toast align-items-center text-bg-success border-0 show"
+                         role="alert" aria-live="assertive" aria-atomic="true"
+                         data-bs-autohide="true" data-bs-delay="7000">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                {{ message }}
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                                    data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Уведомление исчезает через 10 секунд
+        setTimeout(() => {
+            const notificationContainer = document.getElementById('notification-container');
+            if (notificationContainer) {
+                notificationContainer.remove();
+            }
+        }, 10000);
+    </script>
+
+{% endblock content %}
