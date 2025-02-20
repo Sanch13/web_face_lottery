@@ -7,6 +7,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
+from django.core.exceptions import ValidationError
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -165,8 +166,11 @@ def create_lottery(request):
             name = cd["name"]
             description = cd["description"]
             is_active = cd["is_active"]
-            add_lottery(name, description, is_active)
-            return redirect('webfacetg:create_lottery')
+            if Lottery.objects.using("psql").filter(name=name).exists():
+                form.add_error("name", "Такая лотерея уже существует")
+            else:
+                add_lottery(name, description, is_active)
+                return redirect('webfacetg:create_lottery')
     else:
         form = CreateLotteryForm()
 

@@ -58,6 +58,49 @@
         color: red;
         font-weight: bold;
     }
+
+    .error {
+        margin: 5px 0;
+        color: red;
+    }
+
+    .popup {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .popup-content {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        width: 300px;
+    }
+
+    .popup-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+    }
+
+    .edit-button {
+        position: relative;
+        left: 75%;
+        bottom: 0;
+    }
+
+    .delete-button {
+        position: relative;
+        left: 75%;
+        bottom: 0;
+    }
+
     </style>
 {% endblock %}
 
@@ -65,74 +108,117 @@
 
     <div class="container d-flex justify-content-center align-items-center">
         <div style="width: 30%">
-            {% if form.errors %}
-                <div class="alert alert-danger">
-                    <strong>Ошибка!</strong> Пожалуйста, исправте ошибки:
-                    <ul>
-                        {% for field, errors in form.errors.items %}
-                            {% for error in errors %}
-                                <li>{{ field|title }}: {{ error }}</li>
-                            {% endfor %}
-                        {% endfor %}
-                    </ul>
-                </div>
-            {% endif %}
 
             {% if request.user.is_authenticated %}
             <!-- Форма -->
             <h5 class="text-center mb-4">Создать лотерею</h5>
             <form method="post" class="needs-validation" novalidate>
                 {% csrf_token %}
-                {{ form.as_p }}
+
+                <p class="mb-1">
+                    <label for="id_name">Имя лотереи:</label>
+                    {{ form.name }}
+                </p>
+                {% if form.name.errors %}
+                <p class="error">{{ form.name.errors.0 }}</p>
+                {% endif %}
+
+                <p class="mb-1">
+                    <label for="id_description">Описание лотереи:</label>
+                    {{ form.description }}
+                </p>
+                {% if form.description.errors %}
+                <p class="error">{{ form.description.errors.0 }}</p>
+                {% endif %}
+
+                <p>
+                    <label for="id_is_active">Активировать:</label>
+                    {{ form.is_active }}
+                </p>
+
                 <div class="d-grid">
-                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                    <button type="submit" class="btn btn-success">Создать лотерею</button>
                 </div>
             </form>
             {% endif %}
-
         </div>
+    </div>
 
-        <div>
-            <!-- Список лотерей -->
-            {% if lotteries %}
-                <div class="lottery-list">
-                    {% for lottery in lotteries %}
-                        <div class="lottery-item">
-                            <h2 class="lottery-name">{{ lottery.name }}</h2>
-                            <p class="lottery-description">{{ lottery.description }}</p>
-                            <p class="lottery-status">
-                                Статус:
-                                <span class="status-{% if lottery.is_active %}active{% else %}inactive{% endif %}">
-                                    {% if lottery.is_active %}Активна{% else %}Неактивна{% endif %}
-                                </span>
-                            </p>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <p>Лотереи отсутствуют</p>
-            {% endif %}
-        </div>
-
-        <!-- Уведомление -->
-        {% if messages %}
-            <div id="notification-container"
-                 class="toast-container position-fixed bottom-0 end-0 p-3">
-                {% for message in messages %}
-                    <div class="toast align-items-center text-bg-success border-0 show"
-                         role="alert" aria-live="assertive" aria-atomic="true"
-                         data-bs-autohide="true" data-bs-delay="7000">
-                        <div class="d-flex">
-                            <div class="toast-body">
-                                {{ message }}
-                            </div>
-                            <button type="button" class="btn-close btn-close-white me-2 m-auto"
-                                    data-bs-dismiss="toast" aria-label="Close"></button>
-                        </div>
+    <div>
+        <!-- Список лотерей -->
+        {% if lotteries %}
+            <div class="lottery-list">
+                {% for lottery in lotteries %}
+                    <div class="lottery-item">
+                        <h2 class="lottery-name">{{ lottery.name }}</h2>
+                        <p class="lottery-description">{{ lottery.description }}</p>
+                        <p class="lottery-status">
+                            Статус:
+                            <span class="status-{% if lottery.is_active %}active{% else %}inactive{% endif %}">
+                                {% if lottery.is_active %}Активна{% else %}Неактивна{% endif %}
+                            </span>
+                        </p>
+                        <!-- Кнопка редактирования -->
+                        <button class="edit-button btn btn-sm btn-primary" data-lottery-id="{{ lottery.id }}">Редактировать</button>
+                        <button class="delete-button btn btn-sm btn-danger"
+                                data-bs-toggle="modal"
+                                data-bs-target="#deleteModal"
+                                data-lottery-id="{{ lottery.id }}"
+                                data-lottery-name="{{ lottery.name }}">
+                            Удалить
+                        </button>
                     </div>
                 {% endfor %}
             </div>
+        {% else %}
+            <p>Лотереи отсутствуют</p>
         {% endif %}
+    </div>
+
+    <!-- Уведомление -->
+    {% if messages %}
+        <div id="notification-container"
+             class="toast-container position-fixed bottom-0 end-0 p-3">
+            {% for message in messages %}
+                <div class="toast align-items-center text-bg-success border-0 show"
+                     role="alert" aria-live="assertive" aria-atomic="true"
+                     data-bs-autohide="true" data-bs-delay="7000">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            {{ message }}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                                data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Попап для редактирования лотереи -->
+    <div id="edit-popup" class="popup" style="display: none;">
+        <div class="popup-content">
+            <h2>Редактирование лотереи</h2>
+            <form id="edit-form">
+                <input type="hidden" id="lottery-id" name="id">
+                <p>
+                    <label for="edit-name">Имя лотереи:</label>
+                    <input type="text" id="edit-name" name="name" class="form-control">
+                </p>
+                <p>
+                    <label for="edit-description">Описание лотереи:</label>
+                    <input type="text" id="edit-description" name="description" class="form-control">
+                </p>
+                <p>
+                    <label for="edit-is-active">Активна:</label>
+                    <input type="checkbox" id="edit-is-active" name="is_active">
+                </p>
+                <div class="popup-buttons">
+                    <button type="button" id="save-button" class="btn btn-sm btn-success">Сохранить</button>
+                    <button type="button" id="cancel-button" class="btn btn-sm btn-secondary">Отмена</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script>
@@ -143,6 +229,175 @@
                 notificationContainer.remove();
             }
         }, 10000);
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const editButtons = document.querySelectorAll(".edit-button");
+            const popup = document.getElementById("edit-popup");
+            const saveButton = document.getElementById("save-button");
+            const cancelButton = document.getElementById("cancel-button");
+            const editForm = document.getElementById("edit-form");
+
+            // Открытие попапа при клике на "Редактировать"
+            editButtons.forEach(button => {
+                button.addEventListener("click", async () => {
+                    const lotteryId = button.getAttribute("data-lottery-id");
+                    popup.style.display = "flex";
+
+                    // Запрос данных лотереи через GET API
+                    const response = await fetch(`/api/v1/lotteries/${lotteryId}/`);
+                    const lottery = await response.json();
+
+                    // Заполнение формы данными лотереи
+                    document.getElementById("lottery-id").value = lotteryId;
+                    document.getElementById("edit-name").value = lottery.name;
+                    document.getElementById("edit-description").value = lottery.description;
+                    document.getElementById("edit-is-active").checked = lottery.is_active;
+
+                    // Отображение попапа
+                });
+            });
+
+            // Закрытие попапа при клике на "Отмена"
+            cancelButton.addEventListener("click", () => {
+                popup.style.display = "none";
+            });
+
+            // Сохранение изменений при клике на "Сохранить"
+            saveButton.addEventListener("click", async () => {
+                const formData = new FormData(editForm);
+                const lotteryId = formData.get("id");
+                const data = {
+                    name: formData.get("name"),
+                    description: formData.get("description"),
+                    is_active: formData.get("is_active") === "on",
+                };
+
+                try {
+                    const response = await fetch(`/api/v1/lotteries/${lotteryId}/`, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRFToken": "{{ csrf_token }}",
+                        },
+                        body: JSON.stringify(data),
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        console.log("Ошибка сервера:", errorData);
+                        alert(`Не удалось сохранить изменения: \n - ${errorData.error}`);
+
+                        throw new Error(errorData.message || "Ошибка при сохранении изменений");
+                    }
+
+                    // Закрытие попапа и обновление страницы
+                    popup.style.display = "none";
+                    window.location.reload();
+                } catch (error) {
+                    {#console.log("Ошибка:", error);#}
+                    {#alert("Не удалось сохранить изменения", error);#}
+                }
+            });
+        });
+    </script>
+
+
+    <!-- Модальное окно подтверждения -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Подтверждение удаления</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Вы уверены, что хотите удалить лотерею <strong
+                        id="modal-lottery-name"></strong>?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена
+                    </button>
+                    <button id="confirmDeleteBtn" type="button" class="btn btn-danger">Удалить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Уведомление об успешном удалении -->
+    <div id="successAlert" class="alert alert-success position-fixed bottom-0 end-0 m-3 d-none"
+         role="alert"></div>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const deleteModal = document.getElementById("deleteModal");
+            const modalLotteryName = document.getElementById("modal-lottery-name");
+            const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+            const successAlert = document.getElementById("successAlert");
+
+            let lotteryIdToDelete = null;
+
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            // Открытие модального окна
+            deleteModal.addEventListener("show.bs.modal", function (event) {
+                const button = event.relatedTarget;
+                lotteryIdToDelete = button.getAttribute("data-lottery-id");
+                const lotteryName = button.getAttribute("data-lottery-name");
+                modalLotteryName.textContent = lotteryName;
+            });
+
+            // Обработчик кнопки удаления
+            confirmDeleteBtn.addEventListener("click", function () {
+                if (lotteryIdToDelete) {
+                    fetch(`/api/v1/lotteries/${lotteryIdToDelete}/`, {
+                        method: "DELETE",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRFToken": getCookie("csrftoken"),
+                        },
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                // Успешное удаление
+                                {#document.getElementById(`user-row-${userIdToDelete}`).remove();#}
+                                showSuccessAlert("успешно.");
+                                const bootstrapModal = bootstrap.Modal.getInstance(deleteModal);
+                                bootstrapModal.hide();
+                            } else {
+                                console.error("Ошибка");
+                            }
+                        });
+                }
+            });
+
+            // Функция для отображения уведомления
+            function showSuccessAlert(message) {
+                successAlert.textContent = message;
+                successAlert.classList.remove("d-none");
+                setTimeout(() => {
+                    successAlert.classList.add("d-none");
+                }, 10000); // Уведомление исчезнет через 10 секунд
+            }
+        });
     </script>
 
 {% endblock content %}

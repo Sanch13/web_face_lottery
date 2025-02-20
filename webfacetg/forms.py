@@ -1,5 +1,7 @@
 from django import forms
+
 from webfacetg.models import TelegramUser
+from .validators import MinMaxLengthValidator, OnlyLatinSymbolValidator
 
 
 class EditTelegramUserForm(forms.ModelForm):
@@ -20,16 +22,24 @@ class EditTelegramUserForm(forms.ModelForm):
 class CreateLotteryForm(forms.Form):
     name = forms.CharField(
         label="Имя лотереи",
-        min_length=2,
-        max_length=255,
+        required=False,
     )
     description = forms.CharField(
         required=False,
         label="Описание лотереи",
-        min_length=2,
-        max_length=255,
     )
     is_active = forms.BooleanField(required=False)
+
+    def clean_name(self):
+        name = self.cleaned_data["name"]
+        MinMaxLengthValidator(min_length=3, max_length=255).validate(name)
+        OnlyLatinSymbolValidator().validate(name)
+        return name
+
+    def clean_description(self):
+        description = self.cleaned_data["description"]
+        MinMaxLengthValidator(min_length=0, max_length=255).validate(description)
+        return description
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

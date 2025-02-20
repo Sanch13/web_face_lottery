@@ -7,6 +7,7 @@ from django.conf.urls.static import static
 
 import accounts
 from webfacetg.views import home, DeactivateUserAPIView
+from webfacetg.api_views import LotteryUpdateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -15,6 +16,7 @@ urlpatterns = [
     path('telegram_users/', include("webfacetg.urls", namespace="tg_users")),
     path('api/users/<int:user_id>/deactivate/', DeactivateUserAPIView.as_view(),
          name='deactivate-user'),
+    path("api/v1/lotteries/<int:lottery_id>/", LotteryUpdateView.as_view(), name="get_lottery_by_id"),
 ]
 
 
