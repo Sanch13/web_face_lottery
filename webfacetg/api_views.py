@@ -1,4 +1,3 @@
-from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -6,7 +5,7 @@ from rest_framework.response import Response
 
 from pydantic import ValidationError as PydanticValidationError
 
-from .models import Lottery
+from .models import Lottery, Ticket
 from .validators import LotteryUpdateSchema
 
 
@@ -17,9 +16,22 @@ class LotteryUpdateView(APIView):
         try:
             lottery = Lottery.objects.using("psql").get(id=lottery_id)
             schema_data = LotteryUpdateSchema.model_validate(lottery)
-            print(type(schema_data), schema_data)
         except PydanticValidationError as e:
-            return Response({"error": [error["msg"] for error in e.errors()]},
+            # Преобразуем ошибки в формат JSON
+            error = []
+            for err in e.errors():
+                msg = err["msg"]
+                if msg.startswith("Value error, ["):
+                    msg = msg.split("[", 1)[1].split("]", 1)[0].strip("'")
+                error.append({"field": " -> ".join(map(str, err["loc"])), "error": msg})
+            fields = {
+                "name": "Имя лотереи",
+                "description": "Описание лотереи",
+            }
+            field = fields.get(error[0].get('field'))
+            error = error[0].get('error')
+            error_text = f"""Поле '{field}' -> {error}"""
+            return Response({"error": error_text},
                             status=status.HTTP_400_BAD_REQUEST)
         data = schema_data.model_dump()
         return Response(data=data, status=status.HTTP_200_OK)
@@ -59,10 +71,15 @@ class LotteryUpdateView(APIView):
             return Response(data={"error": "Такая лотерея уже существует"}, status=status.HTTP_400_BAD_REQUEST)
 
         instance.save(using="psql")
-        return Response()
+        data = schema_data.model_dump()
+        return Response(data=data, status=status.HTTP_200_OK)
 
-    def delete(self, request, lottery_id, *args, **kwargs):
-        lottery = Lottery.objects.using("psql").filter(id=lottery_id).first()
-        if lottery:
-            lottery.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    # def delete(self, request, lottery_id, *args, **kwargs):
+    #     lottery = Lottery.objects.using("psql").filter(id=lottery_id).first()
+    #     if lottery.is_active is False:
+    #         tickets_from_cur_lottery = Ticket.objects.using("psql").filter(lottery_id=lottery)
+    #         for ticket in tickets_from_cur_lottery:
+    #             ticket.lottery_id = None
+    #         lottery.delete()
+    #         return Response(status=status.HTTP_204_NO_CONTENT)
+    #     return Response(status=status.HTTP_403_FORBIDDEN)

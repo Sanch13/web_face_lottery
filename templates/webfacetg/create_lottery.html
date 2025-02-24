@@ -149,7 +149,7 @@
         {% if lotteries %}
             <div class="lottery-list">
                 {% for lottery in lotteries %}
-                    <div class="lottery-item">
+                    <div class="lottery-item" id="lottery_{{ lottery.id }}">
                         <h2 class="lottery-name">{{ lottery.name }}</h2>
                         <p class="lottery-description">{{ lottery.description }}</p>
                         <p class="lottery-status">
@@ -160,13 +160,13 @@
                         </p>
                         <!-- Кнопка редактирования -->
                         <button class="edit-button btn btn-sm btn-primary" data-lottery-id="{{ lottery.id }}">Редактировать</button>
-                        <button class="delete-button btn btn-sm btn-danger"
-                                data-bs-toggle="modal"
-                                data-bs-target="#deleteModal"
-                                data-lottery-id="{{ lottery.id }}"
-                                data-lottery-name="{{ lottery.name }}">
-                            Удалить
-                        </button>
+{#                        <button class="delete-button btn btn-sm btn-danger"#}
+{#                                data-bs-toggle="modal"#}
+{#                                data-bs-target="#deleteModal"#}
+{#                                data-lottery-id="{{ lottery.id }}"#}
+{#                                data-lottery-name="{{ lottery.name }}">#}
+{#                            Удалить#}
+{#                        </button>#}
                     </div>
                 {% endfor %}
             </div>
@@ -378,12 +378,18 @@
                         .then(response => {
                             if (response.ok) {
                                 // Успешное удаление
-                                {#document.getElementById(`user-row-${userIdToDelete}`).remove();#}
-                                showSuccessAlert("успешно.");
+                                document.getElementById(`lottery_${lotteryIdToDelete}`).remove();
+                                showSuccessAlert("Лотерея успешна удалена.");
                                 const bootstrapModal = bootstrap.Modal.getInstance(deleteModal);
                                 bootstrapModal.hide();
                             } else {
-                                console.error("Ошибка");
+                                if (response.status === 403) {
+                                    showSuccessAlert('Лотерея активна. Удаление не возможно.');
+                                    const bootstrapModal = bootstrap.Modal.getInstance(deleteModal);
+                                    bootstrapModal.hide();
+                                } else {
+                                    console.error("Ошибка");
+                                }
                             }
                         });
                 }

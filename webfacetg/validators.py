@@ -71,10 +71,13 @@ class LotteryUpdateSchema(BaseModel):
             OnlyLatinSymbolValidator().validate(value)
         except ValidationError as e:
             raise ValueError(e)
-
         return value
 
-    # @field_validator("description")
-    # def validate_description(cls, value: str, info: ValidationInfo) -> str:
-    #     MinMaxLengthValidator(min_length=3, max_length=255).validate(value)
-    #     return value
+    @field_validator("description")
+    def validate_description(cls, value: str, info: ValidationInfo) -> str:
+        if value:
+            try:
+                MinMaxLengthValidator(min_length=3, max_length=255).validate(value)
+            except ValidationError as e:
+                raise ValueError(e)
+        return value
