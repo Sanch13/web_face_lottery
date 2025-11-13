@@ -38,6 +38,15 @@ User: Пушкин Александр Сергеевич, Date joined: 2025-11-1
 >>> print(TelegramUser._meta.get_field('date_joined'))
 webfacetg.TelegramUser.date_joined
 ```
+применть фейковую миграцию к БД по умолчанию
+```shell
+(.venv) sanch@it40:~/Projects/webFaceLottery$ python manage.py migrate webfacetg --fake
+Operations to perform:
+  Apply all migrations: webfacetg
+Running migrations:
+  Applying webfacetg.0002_add_date_joined_metadata... FAKED
+```
+
 ---
 
 ### Server side

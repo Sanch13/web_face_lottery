@@ -4,6 +4,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     SECRET_KEY: str
     DEBUG: bool
+    ALLOWED_HOSTS: str
 
     DB_USER_PSQL: str
     DB_PASSWORD_PSQL: str

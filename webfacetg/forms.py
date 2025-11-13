@@ -1,5 +1,4 @@
 from django import forms
-from django.core.exceptions import ValidationError
 
 from webfacetg.models import TelegramUser
 from .validators import MinMaxLengthValidator, OnlyLatinSymbolValidator, NotEmptyValidator
@@ -48,24 +47,3 @@ class CreateLotteryForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.fields['name'].widget.attrs.update({'class': 'form-control'})
         self.fields['description'].widget.attrs.update({'class': 'form-control'})
-
-# TODO: Why? Delete maybe?
-# class CreateUserForm(forms.Form):
-#     telegram_id = forms.CharField(max_length=255)
-#     full_name = forms.CharField(max_length=255)
-#     full_name_from_tg = forms.CharField(max_length=255)
-#     username = forms.CharField(max_length=255, required=False)
-#
-#     def clean_telegram_id(self):
-#         telegram_id = self.cleaned_data["telegram_id"]
-#         try:
-#             telegram_id = int(telegram_id)
-#             if telegram_id <= 0:
-#                 raise ValidationError("telegram_id должен быть положительным числом")
-#         except (ValueError, TypeError) as e:
-#             raise ValidationError("telegram_id должен быть числом")
-#
-#         if TelegramUser.objects.using("psql").filter(telegram_id=telegram_id).exists():
-#             raise ValidationError("Пользователь с таким telegram_id уже есть в БД")
-#
-#         return telegram_id
