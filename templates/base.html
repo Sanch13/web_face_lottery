@@ -31,6 +31,7 @@
             <li ><a href="{% url 'webfacetg:all_lotteries' %}">Список лотерей</a></li>
             {% if request.user.is_authenticated %}
             <li ><a href="{% url 'webfacetg:create_lottery' %}">Создать лотерею</a></li>
+{#            <li ><a href="{% url 'webfacetg:create_user' %}">Создать пользователя</a></li>#}
             {% endif %}
         </ul>
     </nav>

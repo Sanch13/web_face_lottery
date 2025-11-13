@@ -62,6 +62,7 @@ class TelegramUser(models.Model):
                                 blank=True,
                                 null=True)
     is_active = models.BooleanField()
+    date_joined = models.DateTimeField(auto_now_add=True, verbose_name='Дата регистрации')
 
     class Meta:
         managed = False

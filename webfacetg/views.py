@@ -184,3 +184,29 @@ def create_lottery(request):
         template_name="webfacetg/create_lottery.html",
         context=context
     )
+
+# TODO: Why? Delete maybe?
+# @login_required
+# def create_user(request):
+#     if request.method == "POST":
+#         form = CreateUserForm(data=request.POST)
+#         if form.is_valid():
+#             cd = form.cleaned_data
+#             telegram_id = cd["telegram_id"]
+#             full_name = cd["full_name"]
+#             full_name_from_tg = cd["full_name_from_tg"]
+#             username = cd["username"]
+#
+#             add_user(telegram_id, full_name, full_name_from_tg, username)
+#
+#             return redirect("webfacetg:create_user")
+#     else:
+#         form = CreateUserForm()
+#     context = {
+#         "form": form
+#     }
+#     return render(
+#         request=request,
+#         template_name="webfacetg/tg_user_create.html",
+#         context=context,
+#     )

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    <title>Создать лотерею</title>
+{% endblock title %}
+
+{% block css %}
+<style>
+    .errorlist {
+        color: red;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="container d-flex justify-content-center align-items-center">
+        <h5 class="text-center mb-4">Создание пользователя</h5>
+
+        <!-- Форма -->
+        <form method="post" class="needs-validation" novalidate>
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+            </div>
+        </form>
+    </div>
+{% endblock content %}
