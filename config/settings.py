@@ -6,8 +6,10 @@ from settings import settings
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = settings.SECRET_KEY
-
 DEBUG = settings.DEBUG
+
+TELEGRAM_API_TOKEN = settings.TELEGRAM_API_TOKEN
+TELEGRAM_CHAT_ID = settings.TELEGRAM_CHAT_ID
 
 ALLOWED_HOSTS = []
 
@@ -24,11 +26,13 @@ INSTALLED_APPS = [
 INSTALLED_APPS += [
     'webfacetg',
     'accounts',
+    'post',
 ]
 
 # EXTENSIONS
 INSTALLED_APPS += [
     'django_extensions',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -121,3 +125,21 @@ REST_FRAMEWORK = {
 REDIS_HOST = settings.REDIS_HOST or "localhost"
 REDIS_PORT = settings.REDIS_PORT or 6379
 REDIS_DB = settings.REDIS_DB or 0
+
+# Celery Configuration
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Europe/Moscow'
+
+SMTP_SERVER = settings.SMTP_SERVER
+PORT = settings.PORT
+SENDER_EMAIL = settings.SENDER_EMAIL
+PASSWORD = settings.PASSWORD
+ADMIN_EMAIL = settings.ADMIN_EMAIL
+SUBJECT = settings.SUBJECT
+BODY = settings.BODY
+TO_EMAIL = settings.TO_EMAIL
+TO_EMAILS = settings.TO_EMAILS

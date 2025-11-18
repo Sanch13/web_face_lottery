@@ -14,6 +14,7 @@ urlpatterns = [
     path('', home, name='home'),
     path('accounts/', include("accounts.urls", namespace='accounts')),
     path('telegram_users/', include("webfacetg.urls", namespace="tg_users")),
+    path('posts/', include("post.urls", namespace="posts")),
     path('api/users/<int:user_id>/deactivate/', DeactivateUserAPIView.as_view(),
          name='deactivate-user'),
     path("api/v1/lotteries/<int:lottery_id>/", LotteryUpdateView.as_view(), name="get_lottery_by_id"),

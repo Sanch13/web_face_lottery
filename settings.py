@@ -6,6 +6,9 @@ class Settings(BaseSettings):
     DEBUG: bool
     ALLOWED_HOSTS: str
 
+    TELEGRAM_API_TOKEN: str
+    TELEGRAM_CHAT_ID: int
+
     DB_USER_PSQL: str
     DB_PASSWORD_PSQL: str
     DB_HOST_PSQL: str
@@ -20,6 +23,7 @@ class Settings(BaseSettings):
     PORT: int
     SENDER_EMAIL: str
     PASSWORD: str
+    ADMIN_EMAIL: str
     SUBJECT: str
     BODY: str
     TO_EMAIL: str
