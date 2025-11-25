@@ -28,6 +28,8 @@ class Settings(BaseSettings):
     BODY: str
     TO_EMAIL: str
     TO_EMAILS: str
+
+    PATH_TO_JSON_FILE: str
     model_config = SettingsConfigDict(env_file='.env', env_file_encoding='utf-8')
 
 

@@ -143,3 +143,67 @@ SUBJECT = settings.SUBJECT
 BODY = settings.BODY
 TO_EMAIL = settings.TO_EMAIL
 TO_EMAILS = settings.TO_EMAILS
+
+PATH_TO_JSON_FILE = settings.PATH_TO_JSON_FILE
+
+# LOGGING
+LOG_DIR = BASE_DIR / "logs"
+LOG_DIR.mkdir(exist_ok=True)
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "file_formatter": {
+            "format": "{asctime}.{msecs:03.0f} | {levelname} | {pathname} line:{lineno} | {message}",
+            "style": "{",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        },
+        "console_formatter": {
+            "format": "{asctime} {message}",
+            "style": "{",
+            "datefmt": "%H:%M:%S",
+        },
+    },
+    "handlers": {
+        "post": {
+            "level": "INFO",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": LOG_DIR / "post.log",
+            "maxBytes": 1024 * 1024 * 10,  # 10 MB
+            "backupCount": 5,  # Сохраняем последние 5 файлов
+            "formatter": "file_formatter",
+        },
+        "celery_tasks": {
+            "level": "INFO",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": LOG_DIR / "celery_tasks.log",
+            "maxBytes": 1024 * 1024 * 10,  # 10 MB
+            "backupCount": 5,  # Сохраняем последние 5 файлов
+            "formatter": "file_formatter",
+        },
+        # Обработчик для вывода в консоль
+        "console": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stdout",
+            "formatter": "console_formatter",
+        },
+    },
+    "loggers": {
+        "post": {
+            "handlers": ["post", "console"],
+            "level": "INFO",
+            "propagate": False,  # Важно! Не нужно передавать сообщения в стандартный логгер Django
+        },
+        "celery_tasks": {
+            "handlers": ["celery_tasks", "console"],
+            "level": "INFO",
+            "propagate": False,  # Важно! Не нужно передавать сообщения в стандартный логгер Django
+        },
+        "django": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+}

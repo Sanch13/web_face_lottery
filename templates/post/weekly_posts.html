@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактор постов на неделю</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #18222d;
+            color: #e1e1e1;
+            height: 100vh;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #2b5278;
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .header-center {
+            text-align: center;
+            flex: 2;
+        }
+
+        .header-side {
+            flex: 1;
+        }
+
+        .header-left {
+            text-align: left;
+        }
+
+        .header-right {
+            text-align: right;
+        }
+
+        .header h1 {
+            color: #ffffff;
+            margin-bottom: 8px;
+            font-size: 24px;
+        }
+
+        .date-range {
+            font-size: 14px;
+            color: #a0c4e4;
+        }
+
+        .back-btn {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .back-btn:hover {
+            background: #45a049;
+            transform: translateX(-2px);
+        }
+
+        .posts-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .posts-wrapper {
+            position: relative;
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        .posts-carousel {
+            display: flex;
+            height: 100%;
+            gap: 20px;
+            padding: 10px 0;
+            align-items: stretch;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            width: 100%;
+        }
+
+        .posts-carousel::-webkit-scrollbar {
+            display: none;
+        }
+
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(43, 82, 120, 0.9);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-btn:hover {
+            background: rgba(58, 110, 165, 0.9);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .nav-btn:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+
+        .nav-btn.prev {
+            left: 10px;
+        }
+
+        .nav-btn.next {
+            right: 10px;
+        }
+
+        .nav-btn:disabled {
+            background: rgba(85, 85, 85, 0.5);
+            cursor: not-allowed;
+            transform: translateY(-50%);
+        }
+
+        .nav-btn:disabled:hover {
+            background: rgba(85, 85, 85, 0.5);
+            transform: translateY(-50%);
+        }
+
+        .post-card {
+            min-width: 400px;
+            height: 100%;
+            background: #1e2c3a;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid #2b5278;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .post-header {
+            padding: 15px;
+            border-bottom: 1px solid #2b5278;
+            background: #2b5278;
+            flex-shrink: 0;
+        }
+
+        .post-date {
+            font-size: 16px;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 5px;
+        }
+
+        .post-title {
+            font-size: 14px;
+            color: #a0c4e4;
+        }
+
+        .post-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #888;
+            padding: 10px 15px;
+            background: #2b2b2b;
+            flex-shrink: 0;
+        }
+
+        .people-count {
+            background: #4CAF50;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .post-content {
+            padding: 15px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .media-preview {
+            width: 100%;
+            height: 180px;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .media-preview img,
+        .media-preview video {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .video-controls {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            padding: 4px 8px;
+            border-radius: 12px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .video-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 11px;
+            padding: 2px 4px;
+            border-radius: 3px;
+            transition: background 0.2s;
+        }
+
+        .video-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .media-placeholder {
+            color: #888;
+            font-size: 14px;
+            text-align: center;
+            padding: 15px;
+        }
+
+        .media-type-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .text-editor {
+            width: 100%;
+            flex: 1;
+            background: #2b2b2b;
+            border: 1px solid #444;
+            border-radius: 6px;
+            padding: 12px;
+            color: #e1e1e1;
+            font-family: inherit;
+            font-size: 14px;
+            line-height: 1.5;
+            resize: none;
+            min-height: 0;
+        }
+
+        .text-editor:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .save-section {
+            margin-top: 12px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .btn {
+            background: #2b5278;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: #3a6ea5;
+        }
+
+        .btn-primary {
+            background: #4CAF50;
+        }
+
+        .btn-primary:hover {
+            background: #45a049;
+        }
+
+        .status-message {
+            text-align: center;
+            padding: 8px;
+            margin: 8px 0;
+            border-radius: 6px;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        .status-success {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .status-error {
+            background: #f44336;
+            color: white;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .post-card {
+                min-width: 350px;
+            }
+            
+            body {
+                padding: 15px;
+            }
+            
+            .header {
+                padding: 12px;
+            }
+            
+            .header h1 {
+                font-size: 20px;
+            }
+            
+            .nav-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+            
+            .nav-btn.prev {
+                left: 5px;
+            }
+            
+            .nav-btn.next {
+                right: 5px;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .header-center,
+            .header-side {
+                text-align: center;
+                width: 100%;
+            }
+            
+            .back-btn {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <div class="header-side header-left">
+                    <a href="/accounts/login/" class="back-btn">
+                        ← Назад
+                    </a>
+                </div>
+                <div class="header-center">
+                    <h1>📅 Редактор постов на неделю</h1>
+                    <div class="date-range" id="dateRange">
+                        Загрузка дат...
+                    </div>
+                </div>
+                <div class="header-side header-right">
+                    <!-- Пустая область для балансировки -->
+                </div>
+            </div>
+        </div>
+
+        <div id="statusMessage"></div>
+
+        <div class="posts-container">
+            <div class="posts-wrapper">
+                <button class="nav-btn prev" onclick="scrollPosts(-1)" disabled>
+                    ‹
+                </button>
+                
+                <div class="posts-carousel" id="postsCarousel">
+                    <div class="loading" id="loading">
+                        🔄 Загрузка постов...
+                    </div>
+                </div>
+                
+                <button class="nav-btn next" onclick="scrollPosts(1)" disabled>
+                    ›
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript код остается без изменений
+        let postsData = {};
+        let originalData = {};
+
+        // Загрузка постов при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            loadWeeklyPosts();
+        });
+
+        async function loadWeeklyPosts() {
+            const loading = document.getElementById('loading');
+            const carousel = document.getElementById('postsCarousel');
+            const dateRange = document.getElementById('dateRange');
+            const prevBtn = document.querySelector('.nav-btn.prev');
+            const nextBtn = document.querySelector('.nav-btn.next');
+
+            loading.style.display = 'flex';
+            carousel.innerHTML = '';
+            prevBtn.disabled = true;
+            nextBtn.disabled = true;
+            showStatus('', '');
+
+            try {
+                const response = await fetch('/api/posts/weekly_posts/');
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Ошибка загрузки');
+                }
+
+                postsData = data.posts;
+                originalData = JSON.parse(JSON.stringify(data.posts));
+
+                // Обновляем диапазон дат
+                const startDate = new Date(data.start_date).toLocaleDateString('ru-RU');
+                const endDate = new Date(data.end_date).toLocaleDateString('ru-RU');
+                dateRange.textContent = `${startDate} - ${endDate}`;
+
+                // Создаем карточки постов
+                carousel.innerHTML = '';
+                for (const [date, post] of Object.entries(postsData)) {
+                    const postCard = createPostCard(date, post);
+                    carousel.appendChild(postCard);
+                }
+
+                // Включаем кнопки после загрузки
+                prevBtn.disabled = false;
+                nextBtn.disabled = false;
+                updateNavButtons();
+
+                showStatus('✅ Посты успешно загружены', 'success');
+
+            } catch (error) {
+                console.error('Ошибка загрузки:', error);
+                showStatus(`❌ Ошибка загрузки: ${error.message}`, 'error');
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        function scrollPosts(direction) {
+            const carousel = document.getElementById('postsCarousel');
+            const cardWidth = 400 + 20; // ширина карточки + gap
+            const scrollAmount = cardWidth * direction;
+            
+            carousel.scrollBy({
+                left: scrollAmount,
+                behavior: 'smooth'
+            });
+            
+            // Обновляем состояние кнопок после прокрутки
+            setTimeout(updateNavButtons, 300);
+        }
+
+        function updateNavButtons() {
+            const carousel = document.getElementById('postsCarousel');
+            const prevBtn = document.querySelector('.nav-btn.prev');
+            const nextBtn = document.querySelector('.nav-btn.next');
+            
+            // Проверяем, можно ли прокручивать дальше
+            const maxScrollLeft = carousel.scrollWidth - carousel.clientWidth;
+            
+            prevBtn.disabled = carousel.scrollLeft <= 0;
+            nextBtn.disabled = carousel.scrollLeft >= maxScrollLeft - 10; // небольшой запас
+        }
+
+        // Обновляем кнопки при ручной прокрутке
+        document.addEventListener('DOMContentLoaded', function() {
+            const carousel = document.getElementById('postsCarousel');
+            if (carousel) {
+                carousel.addEventListener('scroll', updateNavButtons);
+            }
+        });
+
+        function createPostCard(date, post) {
+            const dateObj = new Date(date);
+            const formattedDate = dateObj.toLocaleDateString('ru-RU', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            const card = document.createElement('div');
+            card.className = 'post-card';
+            card.innerHTML = `
+                <div class="post-header">
+                    <div class="post-date">${formattedDate}</div>
+                    <div class="post-title">${post ? post.title : 'Пост не создан'}</div>
+                </div>
+
+                ${post ? `
+                    <div class="post-meta">
+                        <span>👥 <span class="people-count">${post.people_count} чел.</span></span>
+                        <span>${getStatusBadge(post.status)}</span>
+                    </div>
+
+                    <div class="post-content">
+                        ${createMediaPreview(post)}
+                        <textarea class="text-editor"
+                                  data-post-id="${post.id}"
+                                  placeholder="Текст поста..."
+                                  oninput="markAsChanged(this, '${post.id}')">${post.final_text || ''}</textarea>
+
+                        <div class="save-section">
+                            <button class="btn btn-primary" onclick="savePost('${post.id}')">
+                                💾 Сохранить
+                            </button>
+                        </div>
+                    </div>
+                ` : `
+                    <div class="post-content" style="text-align: center; padding: 40px 20px; color: #888; justify-content: center;">
+                        📭 Пост не создан<br>
+                        <small>Нет именинников на эту дату</small>
+                    </div>
+                `}
+            `;
+
+            return card;
+        }
+
+        function createMediaPreview(post) {
+            if (!post.media_content) {
+                return `<div class="media-preview">
+                    <div class="media-placeholder">📷 Медиа не выбрано</div>
+                </div>`;
+            }
+
+            const media = post.media_content;
+            const mediaUrl = media.media_file;
+            const mediaType = media.media_type;
+            const title = media.title;
+
+            // Определяем тип медиа
+            if (mediaType === 'video' || mediaUrl.match(/\.(mp4|webm|ogg|mov|avi)$/i)) {
+                return `
+                    <div class="media-preview">
+                        <div class="media-type-badge">🎥 ВИДЕО</div>
+                        <video id="video-${post.id}" controls muted preload="metadata"
+                               onerror="handleMediaError(this, '${mediaType}')">
+                            <source src="${mediaUrl}" type="video/mp4">
+                            Ваш браузер не поддерживает видео.
+                        </video>
+                        <div class="video-controls">
+                            <button class="video-btn" onclick="togglePlayPause('${post.id}')">⏯️</button>
+                            <button class="video-btn" onclick="toggleMute('${post.id}')">🔇</button>
+                            <button class="video-btn" onclick="restartVideo('${post.id}')">🔄</button>
+                        </div>
+                    </div>
+                `;
+            } else if (mediaType === 'image' || mediaUrl.match(/\.(jpg|jpeg|png|gif|webp|bmp)$/i)) {
+                return `
+                    <div class="media-preview">
+                        <div class="media-type-badge">🖼️ ФОТО</div>
+                        <img src="${mediaUrl}" alt="${title}"
+                             onerror="handleMediaError(this, '${mediaType}')">
+                    </div>
+                `;
+            } else {
+                return `
+                    <div class="media-preview">
+                        <div class="media-type-badge">📁 ${mediaType.toUpperCase()}</div>
+                        <div class="media-placeholder">
+                            📄 ${title}<br>
+                            <small>Тип файла: ${mediaType}</small>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function handleMediaError(element, mediaType) {
+            const mediaPreview = element.closest('.media-preview');
+            mediaPreview.innerHTML = `
+                <div class="media-placeholder">
+                    ❌ Ошибка загрузки ${mediaType === 'video' ? 'видео' : 'изображения'}<br>
+                    <small>Файл не найден или недоступен</small>
+                </div>
+            `;
+        }
+
+        function togglePlayPause(postId) {
+            const video = document.getElementById(`video-${postId}`);
+            if (video.paused) {
+                video.play();
+            } else {
+                video.pause();
+            }
+        }
+
+        function toggleMute(postId) {
+            const video = document.getElementById(`video-${postId}`);
+            video.muted = !video.muted;
+            const btn = event.target;
+            btn.textContent = video.muted ? '🔇' : '🔊';
+        }
+
+        function restartVideo(postId) {
+            const video = document.getElementById(`video-${postId}`);
+            video.currentTime = 0;
+            video.play();
+        }
+
+        function getStatusBadge(status) {
+            const badges = {
+                'scheduled': '⏳ Запланирован',
+                'published': '✅ Опубликован',
+                'failed': '❌ Ошибка'
+            };
+            return badges[status] || status;
+        }
+
+        function markAsChanged(textarea, postId) {
+            const card = textarea.closest('.post-card');
+            const saveBtn = card.querySelector('.btn-primary');
+            saveBtn.style.background = '#FFA500';
+            saveBtn.textContent = '💾 Сохранить*';
+        }
+
+        async function savePost(postId) {
+            const textarea = document.querySelector(`textarea[data-post-id="${postId}"]`);
+            const finalText = textarea.value;
+
+            showStatus('💾 Сохранение...', '');
+
+            try {
+                const response = await fetch(`/api/posts/${postId}/update_post/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken()
+                    },
+                    body: JSON.stringify({
+                        final_text: finalText
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    const saveBtn = textarea.closest('.post-content').querySelector('.btn-primary');
+                    saveBtn.style.background = '';
+                    saveBtn.textContent = '💾 Сохранено';
+
+                    showStatus('✅ Пост успешно сохранен', 'success');
+
+                    // Обновляем оригинальные данные
+                    if (originalData[data.post.post_date]) {
+                        originalData[data.post.post_date].final_text = finalText;
+                    }
+                } else {
+                    throw new Error(data.message);
+                }
+
+            } catch (error) {
+                console.error('Ошибка сохранения:', error);
+                showStatus(`❌ Ошибка сохранения: ${error.message}`, 'error');
+            }
+        }
+
+        function showStatus(message, type) {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = 'status-message';
+
+            if (type === 'success') {
+                statusEl.classList.add('status-success');
+            } else if (type === 'error') {
+                statusEl.classList.add('status-error');
+            }
+
+            if (message) {
+                setTimeout(() => {
+                    statusEl.textContent = '';
+                    statusEl.className = 'status-message';
+                }, 5000);
+            }
+        }
+
+        function getCSRFToken() {
+            const name = 'csrftoken';
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+</body>
+</html>
