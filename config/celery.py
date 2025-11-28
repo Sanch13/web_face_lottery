@@ -13,22 +13,29 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     'send_admin_email': {
         'task': 'post.tasks.send_admin_email',
-        'schedule': crontab(hour=10, minute=57, day_of_week='mon-fri'),
+        'schedule': crontab(hour=10, minute=57, day_of_week='*'),
     },
-    # 'import_birthday_person_from_json': {
-    #     'task': 'post.tasks.import_birthday_person_from_json',
-    #     'schedule': crontab(hour=10, minute=26, day_of_week='mon-fri'),
-    # },
-    # 'generate_or_update_weekly_posts': {
-    #     'task': 'post.tasks.generate_or_update_weekly_posts',
-    #     'schedule': crontab(hour=10, minute=27, day_of_week='mon-fri'),
-    # },
-    # 'send_post_to_tg': {
-    #     'task': 'post.tasks.send_post_to_tg',
-    #     'schedule': crontab(hour=10, minute=28, day_of_week='mon-fri'),
-    # },
+    'import_birthday_person_from_json': {
+        'task': 'post.tasks.import_birthday_person_from_json',
+        'schedule': crontab(hour=5, minute=5, day_of_week='*'),
+    },
+    'generate_or_update_weekly_posts': {
+        'task': 'post.tasks.generate_or_update_weekly_posts',
+        'schedule': crontab(hour=5, minute=15, day_of_week='*'),
+    },
+    'send_post_to_tg': {
+        'task': 'post.tasks.send_post_to_tg',
+        'schedule': crontab(hour=8, minute=30, day_of_week='*'),
+    },
+    'cleanup_old_posts_only': {
+        'task': 'post.tasks.cleanup_old_posts_only',
+        'schedule': crontab(hour=2, minute=30, day_of_week='*'),
+    },
+    'cleanup_old_birthdays_only': {
+        'task': 'post.tasks.cleanup_old_birthdays_only',
+        'schedule': crontab(hour=3, minute=30, day_of_week='*'),
+    },
 }
-# придумать таску на удаление месячных именинников
 
 app.conf.timezone = 'Europe/Moscow'
 app.conf.broker_url = 'redis://localhost:6379/0'

@@ -14,8 +14,19 @@ logger = logging.getLogger('celery_tasks')
 class JsonImportService:
     def import_birthday_data(self, json_file_path=settings.PATH_TO_JSON_FILE):
         try:
-            with open(json_file_path, 'r', encoding='utf-8-sig') as file:
-                data = json.load(file)
+            if not os.path.exists(json_file_path):
+                logger.error(f"Файл не найден: {json_file_path}")
+                return False
+
+            try:
+                with open(json_file_path, 'r', encoding='utf-8-sig') as file:
+                    data = json.load(file)
+            except json.JSONDecodeError as e:
+                logger.error(f"Ошибка структуры JSON: {e}")
+                return False
+            except OSError as e:
+                logger.error(f"Ошибка ОС при открытии файла: {e}")
+                return False
 
             success_count = 0
             error_count = 0
@@ -49,11 +60,11 @@ class JsonImportService:
                         errors.append(f"Ошибка обработки даты {date_str}: {str(e)}")
 
             if errors:
-                print("   Ошибки:")
+                logger.error("   Ошибки:")
                 for error in errors[:10]:  # Показываем первые 10 ошибок
-                    print(f"     - {error}")
+                    logger.error(f"     - {error}")
                 if len(errors) > 10:
-                    print(f"     ... и ещё {len(errors) - 10} ошибок")
+                    logger.error(f"     ... и ещё {len(errors) - 10} ошибок")
 
             return success_count, error_count, errors
 

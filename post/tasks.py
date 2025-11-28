@@ -1,14 +1,16 @@
-import logging
 import time
+import logging
+from email.message import EmailMessage
 from datetime import datetime, date, timedelta
 
-from celery.app import shared_task
 from django.conf import settings
-from email.message import EmailMessage
+from django.utils import timezone
 
+from celery.app import shared_task
 from post.services.json_parse_birthday_service import JsonImportService
 from post.services.seq_tg_post_service import SequentialPostService
 from post.utils import send_message, send_post_to_tg_channel
+from post.models import TelegramPost, BirthdayPerson
 
 logger = logging.getLogger('celery_tasks')
 
@@ -39,7 +41,8 @@ def send_post_to_tg():
     try:
         success = send_post_to_tg_channel()
         if success:
-            logger.info(f'Затраченное время на отправку составило {time.time() - start_time:.2f} секунд.')
+            logger.info(
+                f'Затраченное время на отправку составило {time.time() - start_time:.2f} секунд.')
         else:
             msg = f"По каким-то причинам не смог отправить пост в ТГ. Статус отправки поста:{success}"
             logger.info(msg)
@@ -54,9 +57,20 @@ def import_birthday_person_from_json():
     logger.info(f'Чтение данных из json')
     try:
         json_service = JsonImportService()
-        json_service.import_birthday_data()
-        json_service.cleanup_file()
-        logger.info(f'Затраченное время на импорт из json составило {time.time() - start_time:.2f} секунд.')
+        result = json_service.import_birthday_data()
+
+        if result is not False:
+            json_service.cleanup_file()
+            success, error, _ = result
+            logger.info(
+                f'Импорт завершен (Успех: {success}, Ошибки: {error}). '
+                f'Затраченное время: {time.time() - start_time:.2f} секунд.'
+            )
+        else:
+            error_msg = "Файл не был удален, так как произошла критическая ошибка при открытии или чтении."
+            logger.error(error_msg)
+            send_admin_email.delay(text=error_msg)
+
     except Exception as e:
         logger.exception(f"Неожиданная ошибка: {e}")
 
@@ -94,3 +108,62 @@ def generate_or_update_weekly_posts():
     logger.info(f"🏁 Обновление постов завершено:\n{final_result}")
     logger.info(f'Затраченное время составило {time.time() - start_time:.2f} секунд.')
 
+
+@shared_task
+def cleanup_old_posts_only():
+    """
+    Удаляет только Telegram посты недельной давности
+    """
+    start_time = time.time()
+    logger.info(f"Удаляю посты недельной давности")
+    try:
+        week_ago = timezone.localtime().now() - timedelta(days=7)
+
+        deleted_count = TelegramPost.objects.filter(
+            post_date__lt=week_ago
+        ).delete()[0]
+        data = {
+            'status': 'success',
+            'deleted_posts': deleted_count,
+            'cleanup_date': timezone.localtime().now().isoformat()
+        }
+        logger.info(f"Удаление постов завершено: data: {data}")
+        logger.info(f'Затраченное время составило {time.time() - start_time:.2f} секунд.')
+        return data
+
+    except Exception as e:
+        logger.exception(f"Ошибка при удалении недельной постов: {e}")
+        return {
+            'status': 'error',
+            'error': str(e)
+        }
+
+
+@shared_task
+def cleanup_old_birthdays_only():
+    """
+    Удаляет только именинников недельной давности
+    """
+    start_time = time.time()
+    logger.info(f"Удаляю именинников недельной давности")
+    try:
+        week_ago = timezone.localtime().now() - timedelta(days=7)
+
+        deleted_count = BirthdayPerson.objects.filter(
+            import_date__lt=week_ago.date()
+        ).delete()[0]
+        data = {
+            'status': 'success',
+            'deleted_birthdays': deleted_count,
+            'cleanup_date': timezone.localtime().now().isoformat()
+        }
+        logger.info(f"Удаление именинников недельной давности завершено: data: {data}")
+        logger.info(f'Затраченное время составило {time.time() - start_time:.2f} секунд.')
+        return data
+
+    except Exception as e:
+        logger.exception(f"Ошибка при удалении именинников недельной давности: {e}")
+        return {
+            'status': 'error',
+            'error': str(e)
+        }
