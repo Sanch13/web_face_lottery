@@ -175,12 +175,19 @@ def parse_emoji_and_format_people(template_text, people_data):
     formatted_lines = []
     for person in people_data:
         fio = format_fio(person.get('fio', ''))
-        department = person.get('position', '') \
-            if person.get('department', '') == "РУКОВОДСТВО И ОТДЕЛЬНЫЕ РАБОТНИКИ" \
-            else person.get('department', '')
+        department = person.get('department', '')
+        position = person.get('position', '')
 
-        if fio and department:
-            line = f"{emoji} <b>{fio} ({department})</b>"
+        if department == "РУКОВОДСТВО И ОТДЕЛЬНЫЕ РАБОТНИКИ":
+            display_department = position if position else ""
+        else:
+            try:
+                display_department = get_abr_department(department) if department else ""
+            except Exception:
+                display_department = department if department else ""
+
+        if fio and display_department:
+            line = f"{emoji} <b>{fio} ({display_department})</b>"
         elif fio:
             line = f"{emoji} <b>{fio}</b>"
         else:
@@ -211,3 +218,36 @@ def format_fio(fio: str):
     m = maker.make(NamePart.MIDDLENAME, gender, Case.ACCUSATIVE, middlename)
 
     return f"{l} {f} {m}"
+
+
+def get_abr_department(key):
+    departments = {
+        "АДМИНИСТРАТИВНО-ХОЗЯЙСТВЕННЫЙ ОТДЕЛ": "АХО",
+        "БУХГАЛТЕРИЯ": "БУХ",
+        "ВК ПРОИЗВОДСТВО": "ВК ПРОИЗВОДСТВО",
+        "ВК СКЛАД ПОЛУФАБРИКАТОВ": "ВК СКЛАД",
+        "ВК СКЛАД СЫРЬЯ И МАТЕРИАЛОВ": "ВК СКЛАД",
+        "ИНСТРУМЕНТАЛЬНЫЙ УЧАСТОК": "ИУ",
+        "ОТДЕЛ ГЛАВНОГО ТЕХНОЛОГА": "ОТГ",
+        "ОТДЕЛ ИНФОРМАЦИОННЫХ ТЕХНОЛОГИЙ": "ОИТ",
+        "ОТДЕЛ КОРПОРАТИВНОЙ БЕЗОПАСНОСТИ": "ОКБ",
+        "ОТДЕЛ МАРКЕТИНГА": "ОМ",
+        "ОТДЕЛ МАТЕРИАЛЬНО-ТЕХНИЧЕСКОГО СНАБЖЕНИЯ": "ОМТС",
+        "ОТДЕЛ ПО ПЛАНИРОВАНИЮ ПРОИЗВОДСТВА": "ПЛАНИРОВАНИЮ ПРОИЗВОДСТВА",
+        "ОТДЕЛ ПО ПРАВОВОЙ РАБОТЕ": "отдел по правовой работе",
+        "ОТДЕЛ ПО РАБОТЕ С ПЕРСОНАЛОМ": "ОП",
+        "ОТДЕЛ ПРОДАЖ": "ОТДЕЛ ПРОДАЖ",
+        "ОТДЕЛ СИСТЕМ МЕНЕДЖМЕНТА И СЕРТИФИКАЦИИ": "ОТДЕЛ СИСТЕМ МЕНЕДЖМЕНТА И СЕРТИФИКАЦИИ",
+        "ОТДЕЛ ТЕХНИЧЕСКОГО КОНТРОЛЯ": "ОТК",
+        "ПЛАНОВО-ЭКОНОМИЧЕСКИЙ ОТДЕЛ": "ПЛАНОВО-ЭКОНОМИЧЕСКИЙ ОТДЕЛ",
+        # "РУКОВОДСТВО И ОТДЕЛЬНЫЕ РАБОТНИКИ": "",
+        "СБОРОЧНЫЙ УЧАСТОК (ВК)": "СУ",
+        "СЕКТОР ПО РЕМОНТУ И ЭКСПЛУАТАЦИИ ЗДАНИЙ И СООРУЖЕНИЙ": "СЕКТОР ПО РЕМОНТУ И ЭКСПЛУАТАЦИИ ЗДАНИЙ И СООРУЖЕНИЙ",
+        "СКЛАДСКОЕ ХОЗЯЙСТВО": "СКЛАД",
+        "ТРАНСПОРТНЫЙ УЧАСТОК": "ТУ",
+        "УЧАСТОК ПЕРЕРАБОТКИ ПЛАСТМАСС": "УПП",
+        "УЧАСТОК ПРОИЗВОДСТВА СКПГ": "СКПГ",
+        "ЦЕНТРАЛЬНЫЙ СКЛАД": "СКЛАД",
+        "ЭНЕРГО-МЕХАНИЧЕСКИЙ ОТДЕЛ": "ЭМО",
+    }
+    return key if key not in departments else departments[key]
