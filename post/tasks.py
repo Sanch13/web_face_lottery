@@ -1,3 +1,4 @@
+import os
 import time
 import logging
 from email.message import EmailMessage
@@ -35,23 +36,6 @@ def send_admin_email(text=None):
 
 
 @shared_task
-def send_post_to_tg():
-    start_time = time.time()
-    logger.info(f'Отправка ТГ поста в ТГ канал')
-    try:
-        success = send_post_to_tg_channel()
-        if success:
-            logger.info(
-                f'Затраченное время на отправку составило {time.time() - start_time:.2f} секунд.')
-        else:
-            msg = f"По каким-то причинам не смог отправить пост в ТГ. Статус отправки поста:{success}"
-            logger.info(msg)
-            send_admin_email(text=msg)
-    except Exception as e:
-        logger.exception(f"Неожиданная ошибка: {str(e)}")
-
-
-@shared_task
 def import_birthday_person_from_json():
     start_time = time.time()
     logger.info(f'Чтение данных из json')
@@ -59,20 +43,39 @@ def import_birthday_person_from_json():
         json_service = JsonImportService()
         result = json_service.import_birthday_data()
 
-        if result is not False:
+        if result is False:
+            error_msg = f"Файл JSON не найден: {settings.PATH_TO_JSON_FILE}"
+            logger.warning(error_msg)
+
+            return {
+                "status": "skipped",
+                "message": error_msg,
+                "file_exists": os.path.exists(settings.PATH_TO_JSON_FILE)
+            }
+
+        success, error, _ = result
+
+        if success > 0:
             json_service.cleanup_file()
-            success, error, _ = result
-            logger.info(
-                f'Импорт завершен (Успех: {success}, Ошибки: {error}). '
-                f'Затраченное время: {time.time() - start_time:.2f} секунд.'
-            )
+            logger.info(f"🗑️ Файл удален после успешного импорта {success} записей")
         else:
-            error_msg = "Файл не был удален, так как произошла критическая ошибка при открытии или чтении."
-            logger.error(error_msg)
-            send_admin_email.delay(text=error_msg)
+            logger.warning(f"⚠️ Файл НЕ удален: импортировано 0 записей, ошибок: {error}")
+
+        logger.info(
+            f'Импорт завершен (Успех: {success}, Ошибки: {error}). '
+            f'Затраченное время: {time.time() - start_time:.2f} секунд.'
+        )
+
+        return {
+            "status": "success",
+            "imported": success,
+            "errors": error,
+            "file_deleted": success > 0
+        }
 
     except Exception as e:
         logger.exception(f"Неожиданная ошибка: {e}")
+        raise
 
 
 @shared_task
@@ -107,6 +110,23 @@ def generate_or_update_weekly_posts():
     final_result = "\n".join(results)
     logger.info(f"🏁 Обновление постов завершено:\n{final_result}")
     logger.info(f'Затраченное время составило {time.time() - start_time:.2f} секунд.')
+
+
+@shared_task
+def send_post_to_tg():
+    start_time = time.time()
+    logger.info(f'Отправка ТГ поста в ТГ канал')
+    try:
+        success = send_post_to_tg_channel()
+        if success:
+            logger.info(
+                f'Затраченное время на отправку составило {time.time() - start_time:.2f} секунд.')
+        else:
+            msg = f"По каким-то причинам не смог отправить пост в ТГ. Статус отправки поста:{success}"
+            logger.info(msg)
+            send_admin_email(text=msg)
+    except Exception as e:
+        logger.exception(f"Неожиданная ошибка: {str(e)}")
 
 
 @shared_task

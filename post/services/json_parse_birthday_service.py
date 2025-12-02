@@ -14,6 +14,8 @@ logger = logging.getLogger('celery_tasks')
 class JsonImportService:
     def import_birthday_data(self, json_file_path=settings.PATH_TO_JSON_FILE):
         try:
+            logger.info(f"Проверка файла: {json_file_path}")
+
             if not os.path.exists(json_file_path):
                 logger.error(f"Файл не найден: {json_file_path}")
                 return False

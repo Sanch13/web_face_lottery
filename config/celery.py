@@ -36,7 +36,3 @@ app.conf.beat_schedule = {
         'schedule': crontab(hour=3, minute=30, day_of_week='*'),
     },
 }
-
-app.conf.timezone = 'Europe/Moscow'
-app.conf.broker_url = 'redis://localhost:6379/0'
-app.conf.result_backend = 'redis://localhost:6379/0'

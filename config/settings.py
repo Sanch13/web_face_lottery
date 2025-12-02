@@ -127,15 +127,16 @@ REST_FRAMEWORK = {
 # Получение параметров подключения к Redis из переменных окружения
 REDIS_HOST = settings.REDIS_HOST or "localhost"
 REDIS_PORT = settings.REDIS_PORT or 6379
-REDIS_DB = settings.REDIS_DB or 0
+REDIS_DB = settings.REDIS_DB or 1
 
 # Celery Configuration
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_BROKER_URL = 'redis://localhost:6379/1'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/1'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Europe/Moscow'
+CELERY_TASK_ACKS_LATE = True
 
 SMTP_SERVER = settings.SMTP_SERVER
 PORT = settings.PORT
